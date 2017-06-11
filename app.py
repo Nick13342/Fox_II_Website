@@ -24,6 +24,10 @@ def bookings():
 def about_us():
     return render_template("about_us.html")
 
+@app.route("/faqs/")
+def faqs():
+    return render_template("faqs.html")
+
 @app.route("/not_available")
 def na():
     return render_template("not_available.html")
