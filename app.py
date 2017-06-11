@@ -12,6 +12,18 @@ def index():
 def rates():
     return render_template("rates.html")
 
+@app.route("/charter/")
+def charter():
+    return render_template("charter.html")
+
+@app.route("/bookings/")
+def bookings():
+    return render_template("bookings.html")
+
+@app.route("/about_us/")
+def about_us():
+    return render_template("about_us.html")
+
 @app.route("/not_available")
 def na():
     return render_template("not_available.html")
