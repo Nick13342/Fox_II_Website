@@ -16,10 +16,6 @@ def rates():
 def charter():
     return render_template("charter.html")
 
-@app.route("/bookings/")
-def bookings():
-    return render_template("bookings.html")
-
 @app.route("/about_us/")
 def about_us():
     return render_template("about_us.html")
