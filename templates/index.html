@@ -38,6 +38,10 @@
 			Still better than the current Fox II website.
 			<br/>
 			See <a href="http://www.akaroafoxsail.co.nz/index.html">Here</a>
+			<br/>
+			{% for row in rows %}
+				<td>{{row["text_stuff"]}}</td>
+			{% endfor %}
 		</div>
 	</body>
 	
