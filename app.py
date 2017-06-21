@@ -16,17 +16,34 @@ def index():
 
     cur = con.cursor()
     cur.execute("select * from home")
+     
 
     rows = cur.fetchall();    
     return render_template("index.html", rows = rows)
 
 @app.route("/rates/")
 def rates():
-    return render_template("rates.html")
+    con = sqlite3.connect("database/Fox_II.db")
+    con.row_factory = sqlite3.Row
+    
+    cur = con.cursor()
+    cur.execute("select * from PNA where id='1'")
+         
+    
+    rows = cur.fetchall();     
+    return render_template("rates.html", rows = rows)
 
 @app.route("/charter/")
 def charter():
-    return render_template("charter.html")
+    con = sqlite3.connect("database/Fox_II.db")
+    con.row_factory = sqlite3.Row
+       
+    cur = con.cursor()
+    cur.execute("select * from PNA where id='2'")
+            
+       
+    rows = cur.fetchall();     
+    return render_template("charter.html", rows = rows)
 
 @app.route("/about_us/")
 def about_us():

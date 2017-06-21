@@ -36,10 +36,18 @@
 	<body>
 	  <div id="content">
 		<p>
-			<h2>Rates & Sailings Page Not Avalible</h2>
-			The page you have tried to access does not exist.
+			<h2>
+				{% for row in rows %}
+					<td>{{row["heading"]}}</td>
+				{% endfor %}
+			</h2>
+			{% for row in rows %}
+				<td>{{row["content1"]}}</td>
+			{% endfor %}
 			<br>
-			Sorry for any inconvinence.
+			{% for row in rows %}
+				<td>{{row["content2"]}}</td>
+			{% endfor %}
 		</p>
 	  </div>
 	</body>
