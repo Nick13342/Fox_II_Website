@@ -47,11 +47,27 @@ def charter():
 
 @app.route("/about_us/")
 def about_us():
-    return render_template("about_us.html")
+    con = sqlite3.connect("database/Fox_II.db")
+    con.row_factory = sqlite3.Row
+           
+    cur = con.cursor()
+    cur.execute("select * from PNA where id='3'")
+                
+           
+    rows = cur.fetchall();     
+    return render_template("about_us.html", rows = rows)
 
 @app.route("/faqs/")
 def faqs():
-    return render_template("faqs.html")
+    con = sqlite3.connect("database/Fox_II.db")
+    con.row_factory = sqlite3.Row
+              
+    cur = con.cursor()
+    cur.execute("select * from PNA where id='4'")
+                   
+              
+    rows = cur.fetchall();     
+    return render_template("faqs.html", rows = rows)
 
 @app.route("/not_available")
 def na():
