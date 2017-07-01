@@ -15,7 +15,7 @@ def index():
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
-    cur.execute("select * from home")
+    cur.execute("select surname, firstname, country from customer cu, country co where cu.CountryCode = co.CountryCode")
      
 
     rows = cur.fetchall();    

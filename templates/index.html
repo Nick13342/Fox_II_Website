@@ -39,9 +39,15 @@
 			<br/>
 			See <a href="http://www.akaroafoxsail.co.nz/index.html">Here</a>
 			<br/>
-			{% for row in rows %}
-				<td>{{row["content1"]}}</td>
-			{% endfor %}
+			<table>
+				<tr>
+					{% for row in rows %}
+						<td>{{row["contentH"]}}</td>
+						<td>{{row["question"]}}</td>
+						<td>{{row["contentFAQ"]}}</td>
+					{% endfor %}
+				</tr>
+			</table>
 		</div>
 	</body>
 	
