@@ -2,7 +2,8 @@
 #c:\Python34\python.exe app.py
 
 import sqlite3
-from flask import Flask, render_template
+from customer import Customer
+from flask import Flask, render_template, request
 app = Flask(__name__, template_folder="templates")
 global cust
 global con
@@ -11,35 +12,10 @@ con = sqlite3.connect('database/Fox_II.db')
 print ("Opened database successfully") #Confirm database connection.
 #con.close()
 
-
-class Customer:
-    
-    def __init__(self):
-        self.__surname = ""
-        self.__firstname = ""
-        self.__email = ""
-        
-    def readCust(self,con,CustID):
-        read_query = "select * from customer where CustID = ?"
-        
-        con.row_factory = sqlite3.Row
-        
-        cur = con.cursor()
-        cur.execute(read_query, (CustID,))
-        
-        row = cur.fetchone();
-        
-        self.__surname = row['surname']
-        self.__firstname = row['firstname']
-        self.__email = row['email']
-        
-    @property
-    def surname(self):
-        return self.__surname
-
-@app.route("/")
+@app.route("/", methods = ['POST', 'GET'])
 def index():
     global con
+    
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
@@ -52,7 +28,15 @@ def index():
     global cust
     cust = Customer()
     cust.readCust(con,2)
+    print(cust.emailAddr)
+    print(cust.dob)
+    cust.emailAddr = 'test'
+    if cust.updateCust(con, 2) == True:
+        print("Updated")
+    else:
+        print("Failed")
     print(cust.surname)
+    print(cust.emailAddr)
     #----------------
     
     return render_template("index.html", rows = rows)
@@ -70,7 +54,10 @@ def rates():
     
     rows = cur.fetchall();
     
+    cust.readCust(con,2)   
     print(cust.surname)
+    print(cust.emailAddr)
+    print(cust.dob)
     
     return render_template("rates.html", rows = rows)
 
