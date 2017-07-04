@@ -12,7 +12,7 @@ con = sqlite3.connect('database/Fox_II.db')
 print ("Opened database successfully") #Confirm database connection.
 #con.close()
 
-@app.route("/", methods = ['POST', 'GET'])
+@app.route("/")
 def index():
     global con
     
@@ -74,6 +74,19 @@ def charter():
     rows = cur.fetchall();     
     return render_template("charter.html", rows = rows)
 
+@app.route("/bookings/")
+def bookings():
+    global con
+        
+    con.row_factory = sqlite3.Row
+                  
+    cur = con.cursor()
+    cur.execute("select * from PNA where id='5'")
+                       
+                  
+    rows = cur.fetchall();     
+    return render_template("bookings.html", rows = rows)
+
 @app.route("/about_us/")
 def about_us():
     global con
@@ -99,6 +112,19 @@ def faqs():
               
     rows = cur.fetchall();     
     return render_template("faqs.html", rows = rows)
+
+@app.route("/thisisasecretpage/admin/")
+def admin():
+    global con
+        
+    con.row_factory = sqlite3.Row
+                  
+    cur = con.cursor()
+    cur.execute("select * from PNA where id='6'")
+                       
+                  
+    rows = cur.fetchall();    
+    return render_template("admin.html", rows = rows)
 
 @app.route("/not_available")
 def na():
