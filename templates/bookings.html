@@ -55,8 +55,35 @@
 				<td>{{row["content2"]}}</td>
 			{% endfor %}
 		</p>
+		<div id="submit">
+			<form action="http://localhost:5000/confirmed" method="POST">
+				<div id="adults">
+					<label for="adults">Adults:</label>
+					<select required>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</select>
+				</div>
+				<div id="children">
+					<label for="children">Children:</label>
+					<select>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</select>
+				</div>
+				<br/>
+				<div id="submit">
+					<input type="submit" value="Confirm Booking">
+				</div>
+			</form>
+		</div>
 	  </div>
 	</body>
+	<p/>	<!--Temporary(Need CSS)-->
 	<footer>
 		<div id="c1">
 			<a href="http://localhost:5000/not_available">Contact</a> | <a href="http://localhost:5000/not_available">About Us</a> | <a href="http://localhost:5000/not_available">FAQ</a>
