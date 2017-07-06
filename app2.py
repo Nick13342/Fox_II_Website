@@ -113,7 +113,7 @@ def faqs():
     rows = cur.fetchall();     
     return render_template("faqs.html", rows = rows)
 
-@app.route("/thisisasecretpage/admin/")
+@app.route("/thisisaverysecretpage/admin/")
 def admin():
     global con
         
