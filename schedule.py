@@ -98,7 +98,7 @@ class Schedule:
     # 
     #-----------------------------------------------------------------------------------------------
     # Read the schedule record and return those matching the starting and ending dates as passed
-    # from the calling program
+    # from the calling program.
     #-----------------------------------------------------------------------------------------------
     def readSchedulebyDate(self, con, startDate, endDate):
         # retValue contains the success or failure of the read operation. Default to success
@@ -111,8 +111,13 @@ class Schedule:
         if not self.__validateDate(startDate) or not self.__validateDate(endDate) :
             self._error = "Invalid date format"
             self._retvalue = False
-            return self._retvalue
- 
+            return (self._retvalue, rows)
+        
+        #Check start date is less than or equal to end date.
+        if startDate > endDate:
+            self._error = "Start date is after end date."
+            self._retvalue = False
+            return (self._retvalue, rows)
         # define SQL query       
         read_query = "SELECT s.CruiseDate, s.CruiseNo, s.departure, s.BoatID, b.name, s.RouteID, \
                      r.description, s.return, s.available, s.status \

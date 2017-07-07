@@ -43,14 +43,15 @@ else:
 
 # --------Customer part ------    
 con = sqlite3.connect('database/Fox_II.db')
+con.execute('pragma foreign_keys=ON')
 print ("Opened database successfully") #Confirm database connection.
 
 
 schedRows = None
 sched = Schedule()
 print("reading schedule")
-(dbStatus, schedRows) = sched.readSchedulebyDate(con,"2017-10-16", "2017-10-17")
-if (dbStatus == True):
+(Status, schedRows) = sched.readSchedulebyDate(con, "2017-10-17", "2017-10-16")
+if (Status == True):
     for myRow in schedRows:
         print(myRow["CruiseDate"])
         print(myRow["CruiseNo"])
@@ -71,7 +72,7 @@ cust.surname = "Glanville"
 cust.firstname = "Nick"
 cust.emailAddr = "abc@gmail.com"
 cust.gender = "M"
-cust.countryCode = "XXX"
+cust.countryCode = "NZL"
 cust.phone = "0274345288"
 cust.dob = "1999-12-03"
 if cust.insertCust(con):

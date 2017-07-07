@@ -3,12 +3,15 @@
 
 import sqlite3
 from customer import Customer
+from schedule import Schedule
 from flask import Flask, render_template, request
 app = Flask(__name__, template_folder="templates")
 global cust
 global con
 
 con = sqlite3.connect('database/Fox_II.db')
+#Makes sure foreign keys are enforced.
+con.execute('pragma foreign_keys=ON')
 print ("Opened database successfully") #Confirm database connection.
 #con.close()
 
@@ -86,6 +89,21 @@ def bookings():
                   
     rows = cur.fetchall();     
     return render_template("bookings.html", rows = rows)
+
+@app.route("/schedules/")
+def schedules():
+    global con
+    
+    schedRows = None
+    Status = None
+    #Create new schedule object.
+    sched = Schedule()
+    #Return cruise schedules between dates.
+    (Status, schedRows) = sched.readSchedulebyDate(con,"2017-10-16", "2017-10-17")
+    if (Status == True):
+        return render_template("schedule.html", rows = schedRows)
+    else:
+        return render_template('not_available.html', error = sched.error)
 
 @app.route("/about_us/")
 def about_us():
