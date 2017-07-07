@@ -70,8 +70,8 @@ print("Inserting Customer")
 cust.surname = "Glanville"
 cust.firstname = "Nick"
 cust.emailAddr = "abc@gmail.com"
-cust.gender = "S"
-cust.countryCode = "NZL"
+cust.gender = "M"
+cust.countryCode = "XXX"
 cust.phone = "0274345288"
 cust.dob = "1999-12-03"
 if cust.insertCust(con):
