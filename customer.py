@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from emailAddress import email
 
 #------------------------------------------------------------------------------------
 # Class Name: Customer
@@ -74,7 +75,11 @@ class Customer:
         self._retvalue = True
         self._error = None
         row = None
-        # define SQL query
+        
+        # define SQL query. Use a UNION statement on the country table to return the name of
+        # the country as well as the codes.  Instead of typing in the full name of the tables
+        # an alias has been used.   
+
         read_query = "SELECT c.CustId, c.Email, c.DOB, c.gender, c.phone, c.surname, c.firstname, \
                     c.CountryCode, cc.country, c.lastBooking, c.totalBookings FROM customer c \
                     INNER JOIN country cc \
@@ -112,14 +117,15 @@ class Customer:
         self._retvalue = True
         self._error = None
         row = None
-        # define SQL query
         
+        # define SQL query. Use a UNION statement on the country table to return the name of
+        # the country as well as the codes.  Instead of typing in the full name of the tables
+        # an alias has been used.       
         read_query = "SELECT c.CustId, c.Email, c.DOB, c.gender, c.phone, c.surname, c.firstname, \
                      c.CountryCode, cc.country, c.lastBooking, c.totalBookings FROM customer c \
                     INNER JOIN country cc \
                     ON c.CountryCode = cc.CountryCode \
                     WHERE c.Email = ?"
-  #      read_query = "select * from customer where Email = ?"
 
         try:
             # define cursone and execute the query, CustID is the primary key so we will only expect
@@ -158,7 +164,16 @@ class Customer:
             self._error = "Invalid date format"
             self._retvalue = False
             return self._retvalue
-            
+        
+        # Now check the new email address. First initalise a new email object with the customers email address. 
+        # It's preferable if the calling program does this check, but we will also capture any errors
+        # here.
+        thisEmail = email(self._email)
+        # Usert the method validEmailAddress to check the email and return any errors if found.
+        if not thisEmail.validEmailAddress():
+            self._error = thisEmail.error
+            self._retvalue = False
+            return self._retvalue
         
         # define SQL query
         insert_query = "insert into customer (Email, surname, firstname, DOB, gender, \
@@ -202,8 +217,16 @@ class Customer:
             self._error = "Invalid date format"
             self._retvalue = False
             return self._retvalue
-            
         
+        # Now check the new email address. First initalise a new email object with the customers email address. 
+        # It's preferable if the calling program does this check, but we will also capture any errors
+        # here.
+        thisEmail = email(self._email)
+        # Usert the method validEmailAddress to check the email and return any errors if found.
+        if not thisEmail.validEmailAddress():
+            self._error = thisEmail.error
+            self._retvalue = False
+            return self._retvalue     
         
         # define SQL query
         update_query = "update customer set Email = ?, surname = ?," \

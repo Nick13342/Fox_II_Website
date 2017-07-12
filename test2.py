@@ -20,7 +20,7 @@ def validateDate(date_text):
         return False
         
 
-if validateDate("2017-3-12"):
+if validateDate("2017-12-12"):
     print("Date successful")
 else:
     print("Date failed")
@@ -42,43 +42,42 @@ else:
     print(emails[1].error)
 
 # --------Customer part ------    
-con = sqlite3.connect('database/Fox_II.db')
-con.execute('pragma foreign_keys=ON')
+con = sqlite3.connect('/Users/bglanv/Documents/Personal/bhs.db')
 print ("Opened database successfully") #Confirm database connection.
 
 
 schedRows = None
 sched = Schedule()
 print("reading schedule")
-(Status, schedRows) = sched.readSchedulebyDate(con, "2017-10-17", "2017-10-16")
-if (Status == True):
+(dbStatus, schedRows) = sched.readSchedulebyDate(con,"2017-10-16", "2017-10-17")
+if (dbStatus == True):
     for myRow in schedRows:
         print(myRow["CruiseDate"])
         print(myRow["CruiseNo"])
         print(myRow["departure"])
         print(myRow["name"])
 else:
-    print(sched.error)
+     print(sched.error)
 
-
+exit()
 
 # Create new customer
 custRow = []
 cust = Customer()
 
 # Create new customer
-print("Inserting Customer")
-cust.surname = "Glanville"
-cust.firstname = "Nick"
-cust.emailAddr = "abc@gmail.com"
-cust.gender = "M"
-cust.countryCode = "NZL"
-cust.phone = "0274345288"
-cust.dob = "1999-12-03"
-if cust.insertCust(con):
-    print("Customer inserted OK")
-else:
-    print(cust.error)
+# print("Inserting Customer")
+# cust.surname = "Glanville"
+# cust.firstname = "Nick"
+# cust.emailAddr = "abc@gmail.com"
+# cust.gender = "M"
+# cust.countryCode = "NZL"
+# cust.phone = "0274345288"
+# cust.dob = "1999-12-03"
+# if cust.insertCust(con):
+#     print("Customer inserted OK")
+# else:
+#     print(cust.error)
 
 # Reading Customer now returns rows
 print("reading customer .....")
