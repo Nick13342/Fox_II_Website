@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from emailAddress import email
+import re
 
 #------------------------------------------------------------------------------------
 # Class Name: Customer
@@ -24,7 +25,7 @@ class Customer:
         self._CustID = 0
         self._surname = ""
         self._firstname = ""
-        self._email = ""
+        self._email = None
         self._dob = None
         self._gender = ""
         self._phone = ""
@@ -47,24 +48,49 @@ class Customer:
         self._countryCode = row['CountryCode']
         self._lastBooking = row['lastBooking']
         self._totalBookings = row['totalBookings']
-    
+ 
+ 
     #---------------------------------------------------------------------------------
-    #  Internal function to check the date format.  Usually we expect that the incoming
-    #  date has been successfully validated, but this final check will ensure database
-    #  integrity in the event that it hasn't been validated correctly
+    #  Internal function to check the date or time format.  Usually we expect that the 
+    #  incoming value has been successfully validated, but this final check will ensure 
+    #  database integrity in the event that it hasn't been validated correctly
     #---------------------------------------------------------------------------------       
-    def __validateDate(self,date_text):
+    def __validateDT(self,date_text, format):
         try:
-            # take the date_text and return a date time value formatted as YYYY-MM_DD. Reformatting the
-            # date back with strftime ensures we have zero padded Month and Day values. If there is an
-            # error converting the date with strptime, then a Value error exection is raised.  We do the
-            # same manually if the final dates don't match
-            if date_text != datetime.strptime(date_text, "%Y-%m-%d").strftime('%Y-%m-%d'):
+            # Take the date_text and return a datetime value formatted as supplied to the function.
+            # Reformatting the string back ensure we have the format we require, including leading
+            # 0's. eg 09:04, 2017-03-02
+            # If there is anerror converting the date with strptime, then a Value error execption
+            # is raised.  If the dates don't match we raise the ValueError eception as well so
+            # it can be handled in the same way
+            if date_text != datetime.strptime(date_text, format).strftime(format):
                 raise ValueError
             return True
         except ValueError:
+            return False      
+ 
+  
+    #---------------------------------------------------------------------------------
+    # Internal function to check the phone format. Just check that the phone number
+    # contains recognised numbers. Use the following regulare expression
+    # ^[+]?[\(\)0-9]+)+$
+    # where:
+    # ^ - indicates the beginning of the string
+    # [+]? - allows an optional + character at the beginning of the string
+    # [\(\)0-9]+ - allows any digits and parenthesis in the rest of the string
+    # $ - indicates the end of the string.
+    #
+    # So examples of valid numbers: +123456534, +(064)26528907, 033662987
+    # Examples of invalid numbers:  027-43543098 0800-TOPDOG
+    #---------------------------------------------------------------------------------         
+    def __validatePhoneNumber(self, phone_number):
+        # Use Pythons built in Regular Epression object to compare the phone number
+        pattern = re.compile("^[+]?[\(\)0-9]+$")
+        if pattern.match(phone_number):
+            return True
+        else:
             return False
-        
+           
         
     #-----------------------------------------------------------------------------------------------
     # Read a customer record from the database.  Required is the database handle and the Customer ID
@@ -159,21 +185,31 @@ class Customer:
         self._error = None
         
         # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-        # constraints within the database itself.  
-        if not self.__validateDate(self._dob):
-            self._error = "Invalid date format"
-            self._retvalue = False
-            return self._retvalue
-        
+        # constraints within the database itself.
+        if self._dob:
+            if not self.__validateDT(self._dob,"%Y-%m-%d"):
+                self._error = "Invalid date format"
+                self._retvalue = False
+                return self._retvalue
+ 
+        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
+        # constraints within the database itself.
+        if self._phone:
+            if not self.__validatePhoneNumber(self._phone):
+                self._error = "Invalid phone number format. Must only contain +, (,) and digits"
+                self._retvalue = False
+                return self._retvalue
+           
         # Now check the new email address. First initalise a new email object with the customers email address. 
         # It's preferable if the calling program does this check, but we will also capture any errors
         # here.
-        thisEmail = email(self._email)
-        # Usert the method validEmailAddress to check the email and return any errors if found.
-        if not thisEmail.validEmailAddress():
-            self._error = thisEmail.error
-            self._retvalue = False
-            return self._retvalue
+        if self._email:
+            thisEmail = email(self._email)
+            # Use the method validEmailAddress to check the email and return any errors if found.
+            if not thisEmail.validEmailAddress():
+                self._error = thisEmail.error
+                self._retvalue = False
+                return self._retvalue
         
         # define SQL query
         insert_query = "insert into customer (Email, surname, firstname, DOB, gender, \
@@ -212,21 +248,31 @@ class Customer:
         self._error = None
         
         # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-        # constraints within the database itself.  
-        if not self.__validateDate(self._dob):
-            self._error = "Invalid date format"
-            self._retvalue = False
-            return self._retvalue
+        # constraints within the database itself.
+        if self._dob:
+            if not self.__validateDT(self._dob,"%Y-%m-%d"):
+                self._error = "Invalid date format"
+                self._retvalue = False
+                return self._retvalue
+        
+        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
+        # constraints within the database itself.
+        if self._phone:
+            if not self.__validatePhoneNumber(self._phone):
+                self._error = "Invalid phone number format. Must only contain +, (,) and digits"
+                self._retvalue = False
+                return self._retvalue
         
         # Now check the new email address. First initalise a new email object with the customers email address. 
         # It's preferable if the calling program does this check, but we will also capture any errors
         # here.
-        thisEmail = email(self._email)
-        # Usert the method validEmailAddress to check the email and return any errors if found.
-        if not thisEmail.validEmailAddress():
-            self._error = thisEmail.error
-            self._retvalue = False
-            return self._retvalue     
+        if self._email:
+            thisEmail = email(self._email)
+            # Use the method validEmailAddress to check the email and return any errors if found.
+            if not thisEmail.validEmailAddress():
+                self._error = thisEmail.error
+                self._retvalue = False
+                return self._retvalue     
         
         # define SQL query
         update_query = "update customer set Email = ?, surname = ?," \
