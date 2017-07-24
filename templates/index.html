@@ -42,18 +42,25 @@
 			<br/>
 			See <a href="http://www.akaroafoxsail.co.nz/index.html">Here</a>
 			<br/>
-			<table>
-				<tr>
-					{% for row in rows %}
-						<td>{{row["contentH"]}}</td>
-						<td>{{row["question"]}}</td>
-						<td>{{row["contentFAQ"]}}</td>
-					{% endfor %}
-				</tr>
-			</table>
+			<p>
+				<table>
+					<tr>
+						{% for row in rows %}
+							<tr>
+								<td>{{row["CruiseDate"]}}</td>
+								<td>{{row["departure"]}}</td>
+								<td>{{row["return"]}}</td>
+								<td>{{row["name"]}}</td>
+								<td>{{row["RouteID"]}}</td>
+								<td>{{row["available"]}}</td>
+							</tr>
+						{% endfor %}
+					</tr>
+				</table>
+			</p>
 		</div>
 	</body>
-	
+	<br/>
 	<footer>
 		<div id="c1">
 			<a href="http://localhost:5000/not_available">Contact</a> | <a href="http://localhost:5000/not_available">About Us</a> | <a href="http://localhost:5000/not_available">FAQ</a>

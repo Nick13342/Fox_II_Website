@@ -8,6 +8,7 @@ from flask import Flask, render_template, request
 app = Flask(__name__, template_folder="templates")
 global cust
 global con
+sched = Schedule()
 
 con = sqlite3.connect('database/Fox_II.db')
 #Makes sure foreign keys are enforced.
@@ -22,24 +23,25 @@ def index():
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
-    cur.execute("select contentH, question, contentFAQ from home, faq")
-     
-
+    cur.execute("select CruiseDate, departure, return, RouteID, available, name from schedule, boat") 
+    def readSched(con, CruiseDate, CruiseNo):
+        sched.readSched(con, CruiseDate, CruiseNo)
+    
     rows = cur.fetchall();
     
     #----------------
-    global cust
-    cust = Customer()
-    cust.readCust(con,2)
-    print(cust.emailAddr)
-    print(cust.dob)
-    cust.emailAddr = 'test'
-    if cust.updateCust(con, 2) == True:
-        print("Updated")
-    else:
-        print("Failed")
-    print(cust.surname)
-    print(cust.emailAddr)
+    #global cust
+    #cust = Customer()
+    #cust.readCust(con,2)
+    #print(cust.emailAddr)
+    #print(cust.dob)
+    #cust.emailAddr = 'test'
+    #if cust.updateCust(con, 2) == True:
+        #print("Updated")
+    #else:
+        #print("Failed")
+    #print(cust.surname)
+    #print(cust.emailAddr)
     #----------------
     
     return render_template("index.html", rows = rows)
