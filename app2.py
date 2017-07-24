@@ -3,12 +3,16 @@
 
 import sqlite3
 from customer import Customer
+from schedule import Schedule
 from flask import Flask, render_template, request
 app = Flask(__name__, template_folder="templates")
 global cust
 global con
+sched = Schedule()
 
 con = sqlite3.connect('database/Fox_II.db')
+#Makes sure foreign keys are enforced.
+con.execute('pragma foreign_keys=ON')
 print ("Opened database successfully") #Confirm database connection.
 #con.close()
 
@@ -19,24 +23,25 @@ def index():
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
-    cur.execute("select contentH, question, contentFAQ from home, faq")
-     
-
+    cur.execute("select CruiseDate, CruiseNo, departure, return, RouteID, available, name from schedule, boat") 
+    def readSched(con, CruiseDate, CruiseNo):
+        sched.readSchedcon, CruiseDate, CruiseNo
+    
     rows = cur.fetchall();
     
     #----------------
-    global cust
-    cust = Customer()
-    cust.readCust(con,2)
-    print(cust.emailAddr)
-    print(cust.dob)
-    cust.emailAddr = 'test'
-    if cust.updateCust(con, 2) == True:
-        print("Updated")
-    else:
-        print("Failed")
-    print(cust.surname)
-    print(cust.emailAddr)
+    #global cust
+    #cust = Customer()
+    #cust.readCust(con,2)
+    #print(cust.emailAddr)
+    #print(cust.dob)
+    #cust.emailAddr = 'test'
+    #if cust.updateCust(con, 2) == True:
+        #print("Updated")
+    #else:
+        #print("Failed")
+    #print(cust.surname)
+    #print(cust.emailAddr)
     #----------------
     
     return render_template("index.html", rows = rows)
@@ -87,6 +92,21 @@ def bookings():
     rows = cur.fetchall();     
     return render_template("bookings.html", rows = rows)
 
+@app.route("/schedules/")
+def schedules():
+    global con
+    
+    schedRows = None
+    Status = None
+    #Create new schedule object.
+    sched = Schedule()
+    #Return cruise schedules between dates.
+    (Status, schedRows) = sched.readSchedulebyDate(con,"2017-10-16", "2017-10-17")
+    if (Status == True):
+        return render_template("schedule.html", rows = schedRows)
+    else:
+        return render_template('not_available.html', error = sched.error)
+
 @app.route("/about_us/")
 def about_us():
     global con
@@ -113,7 +133,7 @@ def faqs():
     rows = cur.fetchall();     
     return render_template("faqs.html", rows = rows)
 
-@app.route("/thisisasecretpage/admin/")
+@app.route("/thisisaverysecretpage/admin/")
 def admin():
     global con
         

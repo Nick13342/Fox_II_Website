@@ -84,13 +84,10 @@ class email:
   #---------------------------------------------------------------------------------
   #  Define getter and setter routines here.
   #---------------------------------------------------------------------------------
-  
-  
-  # Allow calling program to interrogate the error code
+ 
+  # Allow calling program to interrogate the error code  
     @property
     def error(self):
         return self._error
     
-    @property
-    def email_count(self):
-        return email.count
+ 
