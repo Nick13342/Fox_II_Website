@@ -122,7 +122,7 @@ class Schedule:
         
         # Check that the dates are in a valid format and consistant with those that will be stored
         # within the Schedule table
-        if not self.__validateDT(startDate, "%Y-%m-%d") or not self.__validateDate(endDate, "%Y-%m-%d") :
+        if not self.__validateDT(startDate, "%Y-%m-%d") or not self.__validateDT(endDate, "%Y-%m-%d") :
             self._error = "Invalid date format"
             self._retvalue = False
             return (self._retvalue, rows)

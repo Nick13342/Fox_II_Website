@@ -19,21 +19,11 @@ print ("Opened database successfully") #Confirm database connection.
 @app.route("/")
 def index():
     global con
+    sched = Schedule()
     
-    con.row_factory = sqlite3.Row
-
-    cur = con.cursor()
-<<<<<<< HEAD
-    cur.execute("select CruiseDate, CruiseNo, departure, return, RouteID, available, name from schedule, boat") 
-    def readSched(con, CruiseDate, CruiseNo):
-        sched.readSchedcon, CruiseDate, CruiseNo
-=======
-    cur.execute("select CruiseDate, departure, return, RouteID, available, name from schedule, boat") 
-    def readSched(con, CruiseDate, CruiseNo):
-        sched.readSched(con, CruiseDate, CruiseNo)
->>>>>>> 1f188447575a8f55a5cf4ddb2fcb1b7ffd6dd361
-    
-    rows = cur.fetchall();
+    startDate = '2017-10-16'
+    endDate = '2017-10-17'
+    (dbStatus, rows) = sched.readSchedulebyDate(con, startDate, endDate)
     
     #----------------
     #global cust
