@@ -38,13 +38,28 @@
 	
 	<body>
 		<div id="content">
-			Still better than the current Fox II website.
-			<br/>
-			See <a href="http://www.akaroafoxsail.co.nz/index.html">Here</a>
-			<br/>
+			Content Stuff
 			<p>
 				<table>
 					<tr>
+						<td>
+							Cruise Date
+						</td>
+						<td>
+							Departure Time
+						</td>
+						<td>
+							Return Time
+						</td>
+						<td>
+							 Vessel
+						</td>
+						<td>
+							Route
+						</td>
+						<td>
+							Available Seats
+						</td>
 						{% for row in rows %}
 							<tr>
 								<td>{{row["CruiseDate"]}}</td>
