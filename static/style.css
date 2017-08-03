@@ -15,7 +15,8 @@ nav ul {
 	padding: 0 20px;
 	border-radius: 10px;  
 	list-style: none;
-	position: relative;
+	position: fixed;
+	overflow: auto;
 	display: inline-table;
 }
 	nav ul:after {
@@ -39,3 +40,4 @@ nav ul li {
 		display: block; padding: 25px 40px;
 		color: #757575; text-decoration: none;
 	}
+
