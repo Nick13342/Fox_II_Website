@@ -18,7 +18,7 @@ class Schedule:
     #---------------------------------------------------------------------------------
     def __init__(self):
         
-        # Create blank instance vriables for the new created object here.  We will
+        # Create blank instance variables for the new created object here.  We will
         # prefix these with a single '_' to make clear that they are internal to this class.
         self._CruiseDate = None
         self._CruiseNo = 1
@@ -43,7 +43,7 @@ class Schedule:
         self._return = row['return']
         self._available = row['available']
         self._status = row['status']
-
+    
     #---------------------------------------------------------------------------------
     #  Internal function to check the date or time format.  Usually we expect that the 
     #  incoming value has been successfully validated, but this final check will ensure 
@@ -100,7 +100,7 @@ class Schedule:
                 self._error = "No schedule record found for date " + str(CruiseDate) + " and number  " + str(CruiseNo)
                 self._retvalue = False
             else:
-                self.__setCustomer(row)
+                self.__setSchedule(row)
     
             
         # Exception processing logic here.            
@@ -132,9 +132,10 @@ class Schedule:
             self._retvalue = False
             return (self._retvalue, rows)
  
-        # define SQL query       
+        # define SQL query
+        # taking CruiseDate and CruiseNo and join into one field so can be used for the book now button
         read_query = "SELECT s.CruiseDate, s.CruiseNo, s.departure, s.BoatID, b.name, s.RouteID, \
-                     r.description, s.return, s.available, s.status \
+                     r.description, s.return, s.available, s.status, (s.CruiseDate || '.' || s.CruiseNo) as 'key' \
                     FROM schedule s \
                     INNER JOIN boat b \
                     ON b.BoatID = s.BoatID \
@@ -293,6 +294,9 @@ class Schedule:
     def CruiseNo(self, CruiseNo):
         self._CruiseNo = CruiseNo 
     
+    @property
+    def BoatID(self):
+        return self._BoatID
     
     # # ----- Email addreess ----
     # @property

@@ -38,23 +38,40 @@
 	
 	<body>
 	  <div id="content">
-		<p>
-			<h2>
+		<table>
+			<tr>
+				<td>
+					Cruise Date
+				</td>
+				<td>
+					Departure Time
+				</td>
+				<td>
+					Return Time
+				</td>
+				<td>
+					 Vessel
+				</td>
+				<td>
+					Route
+				</td>
+				<td>
+					Available Seats
+				</td>
+				<td>
+				</td>
 				{% for row in rows %}
-					<td>{{row["heading"]}}</td>
+					<tr>
+						<td>{{row["CruiseDate"]}}</td>
+						<td>{{row["departure"]}}</td>
+						<td>{{row["return"]}}</td>
+						<td>{{row["name"]}}</td>
+						<td>{{row["RouteID"]}}</td>
+						<td>{{row["available"]}}</td>
+					</tr>
 				{% endfor %}
-			</h2>
-			
-			{% for row in rows %}
-				<td>{{row["content1"]}}</td>
-			{% endfor %}
-			
-			<br>
-			
-			{% for row in rows %}
-				<td>{{row["content2"]}}</td>
-			{% endfor %}
-		</p>
+			</tr>
+		</table>
 		
 		<div id="adults">
 			<label for="adults">Adults:</label>

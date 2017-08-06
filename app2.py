@@ -92,33 +92,22 @@ def bookings():
 def singlebooking():
     global con
     sched = Schedule()
-    
-    #my_data = request.form
-    #for key in my_data:
-        #print('form key '+key+" "+my_data[key])
         
-    print(request.method)
-    
     if request.method == 'POST':
-        #qty = request.form['quantity']
-        #print('qty')
-        #print(qty)
         print("post")
         print(request.form)
-        CruiseDate = request.form['CruiseDate']
+        CruiseDate = request.form['label'].split('.')[0]
         print(CruiseDate)
-        CruiseNo = request.form['CruiseNo']
-        print('CruiseNo')
+        CruiseNo = int(request.form['label'].split('.')[1])
+        print(CruiseNo)
+        
         
     (dbStatus, rows) = sched.readSched(con, CruiseDate, CruiseNo)
+    print(enumerate(rows))
+    print(dbStatus)
+    print(sched.CruiseDate)
+    print(sched.BoatID)
         
-    con.row_factory = sqlite3.Row
-                  
-    cur = con.cursor()
-    cur.execute("select * from PNA where id='5'")
-                       
-                  
-    rows = cur.fetchall();     
     return render_template("singlebooking.html", rows = rows)
 
 @app.route("/schedules/")
