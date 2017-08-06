@@ -38,50 +38,68 @@
 	
 	<body>
 	  <div id="content">
-		<p>
-			<h2>
-				{% for row in rows %}
-					<td>{{row["heading"]}}</td>
-				{% endfor %}
-			</h2>
-			
-			{% for row in rows %}
-				<td>{{row["content1"]}}</td>
-			{% endfor %}
-			
-			<br>
-			
-			{% for row in rows %}
-				<td>{{row["content2"]}}</td>
-			{% endfor %}
-		</p>
-		
-		<div id="adults">
-			<label for="adults">Adults:</label>
-			<select required>
-				<option value="0">0</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-			</select>
-		</div>
-		<div id="children">
-			<label for="children">Children:</label>
-			<select>
-				<option value="0">0</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-			</select>
-		</div>
-		</br>
-		<div id="submit">
-			<form action="http://localhost:5000/confirmed" method="POST">
-				<div id="submit">
-					<input type="submit" value="Confirm Booking">
-				</div>
-			</form>
-		</div>
+		<table>
+			<tr>
+				<td>
+					Cruise Date
+				</td>
+				<td>
+					Departure Time
+				</td>
+				<td>
+					Return Time
+				</td>
+				<td>
+					 Vessel
+				</td>
+				<td>
+					Route
+				</td>
+				<td>
+					Available Seats
+				</td>
+				<td>
+					<label for="adults">Adults:</label>
+				</td>
+				<td>
+					<label for="children">Children:</label>
+				</td>
+				<form action="/custdetails/" method='POST'>
+					{% for row in rows %}
+						<tr>
+							<td>{{row["CruiseDate"]}}</td>
+							<td>{{row["departure"]}}</td>
+							<td>{{row["return"]}}</td>
+							<td>{{row["name"]}}</td>
+							<td>{{row["RouteID"]}}</td>
+							<td>{{row["available"]}}</td>
+							<td>
+								<label for="adults"></label>
+								<select required>
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+								</select>
+							</td>
+							<td>
+								<label for="children"></label>
+								<select required>
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+								</select>
+							</td>
+							<td>
+								<input type="submit" value="Book Now">
+							</td>
+						</tr>
+					{% endfor %}
+					
+				</form>
+			</tr>
+		</table>
 	  </div>
 	</body>
 	<p/>	<!--Temporary(Need CSS)-->

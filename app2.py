@@ -1,5 +1,5 @@
 #cd 2017\DTP\Fox_II_Website
-#c:\Python34\python.exe app.py
+#c:\Python34\python.exe app2.py
 
 import sqlite3
 from customer import Customer
@@ -78,14 +78,12 @@ def charter():
 @app.route("/bookings/")
 def bookings():
     global con
-        
-    con.row_factory = sqlite3.Row
-                  
-    cur = con.cursor()
-    cur.execute("select * from PNA where id='5'")
-                       
-                  
-    rows = cur.fetchall();     
+    sched = Schedule()
+    
+    startDate = '2017-01-01'
+    endDate = '2017-12-31'
+    (dbStatus, rows) = sched.readSchedulebyDate(con, startDate, endDate)
+    
     return render_template("bookings.html", rows = rows)
 
 @app.route("/singlebooking/", methods = ['POST'])
@@ -94,19 +92,11 @@ def singlebooking():
     sched = Schedule()
         
     if request.method == 'POST':
-        print("post")
-        print(request.form)
         CruiseDate = request.form['label'].split('.')[0]
-        print(CruiseDate)
         CruiseNo = int(request.form['label'].split('.')[1])
-        print(CruiseNo)
         
         
     (dbStatus, rows) = sched.readSched(con, CruiseDate, CruiseNo)
-    print(enumerate(rows))
-    print(dbStatus)
-    print(sched.CruiseDate)
-    print(sched.BoatID)
         
     return render_template("singlebooking.html", rows = rows)
 

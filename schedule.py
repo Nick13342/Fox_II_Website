@@ -94,7 +94,7 @@ class Schedule:
             cur = con.cursor()
             cur.execute(read_query, (CruiseDate, CruiseNo))
         
-            row = cur.fetchone();
+            row = cur.fetchall();
             
             if row == None:
                 self._error = "No schedule record found for date " + str(CruiseDate) + " and number  " + str(CruiseNo)

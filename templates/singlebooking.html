@@ -59,46 +59,47 @@
 					Available Seats
 				</td>
 				<td>
+					<label for="adults">Adults:</label>
 				</td>
-				{% for row in rows %}
-					<tr>
-						<td>{{row["CruiseDate"]}}</td>
-						<td>{{row["departure"]}}</td>
-						<td>{{row["return"]}}</td>
-						<td>{{row["name"]}}</td>
-						<td>{{row["RouteID"]}}</td>
-						<td>{{row["available"]}}</td>
-					</tr>
-				{% endfor %}
+				<td>
+					<label for="children">Children:</label>
+				</td>
+				<form action="/custdetails/" method='POST'>
+					{% for row in rows %}
+						<tr>
+							<td>{{row["CruiseDate"]}}</td>
+							<td>{{row["departure"]}}</td>
+							<td>{{row["return"]}}</td>
+							<td>{{row["name"]}}</td>
+							<td>{{row["RouteID"]}}</td>
+							<td>{{row["available"]}}</td>
+							<td>
+								<label for="adults"></label>
+								<select required>
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+								</select>
+							</td>
+							<td>
+								<label for="children"></label>
+								<select required>
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+								</select>
+							</td>
+						</tr>
+					{% endfor %}
+					<td>
+						<input type="submit" value="Confirm Booking">
+					</td>
+				</form>
 			</tr>
 		</table>
-		
-		<div id="adults">
-			<label for="adults">Adults:</label>
-			<select required>
-				<option value="0">0</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-			</select>
-		</div>
-		<div id="children">
-			<label for="children">Children:</label>
-			<select>
-				<option value="0">0</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-			</select>
-		</div>
 		</br>
-		<div id="submit">
-			<form action="http://localhost:5000/confirmed" method="POST">
-				<div id="submit">
-					<input type="submit" value="Confirm Booking">
-				</div>
-			</form>
-		</div>
 	  </div>
 	</body>
 	<p/>	<!--Temporary(Need CSS)-->
