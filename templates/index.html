@@ -62,16 +62,23 @@
 						<td>
 							Available Seats
 						</td>
-						{% for row in rows %}
-							<tr>
-								<td>{{row["CruiseDate"]}}</td>
-								<td>{{row["departure"]}}</td>
-								<td>{{row["return"]}}</td>
-								<td>{{row["name"]}}</td>
-								<td>{{row["RouteID"]}}</td>
-								<td>{{row["available"]}}</td>
-							</tr>
-						{% endfor %}
+						<td>
+						</td>
+						<form action="http://localhost:5000/singlebooking" method='POST'>
+							{% for row in rows %}
+								<tr>
+									<td name="CruiseDate">{{row["CruiseDate"]}}</td>
+									<td>{{row["departure"]}}</td>
+									<td>{{row["return"]}}</td>
+									<td>{{row["name"]}}</td>
+									<td>{{row["RouteID"]}}</td>
+									<td>{{row["available"]}}</td>
+									<td>
+										<input type="submit" name="label" value="Book Now">
+									</td>
+								</tr>
+							{% endfor %}
+						</form>
 					</tr>
 				</table>
 			</p>

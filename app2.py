@@ -55,10 +55,10 @@ def rates():
     
     rows = cur.fetchall();
     
-    cust.readCust(con,2)   
-    print(cust.surname)
-    print(cust.emailAddr)
-    print(cust.dob)
+    #cust.readCust(con,2)   
+    #print(cust.surname)
+    #print(cust.emailAddr)
+    #print(cust.dob)
     
     return render_template("rates.html", rows = rows)
 
@@ -87,6 +87,36 @@ def bookings():
                   
     rows = cur.fetchall();     
     return render_template("bookings.html", rows = rows)
+
+@app.route("/singlebooking/", methods = ['POST', 'GET'])
+def singlebooking():
+    global con
+    sched = Schedule()
+    
+    my_data = request.form
+    for key in my_data:
+        print('form key '+key+" "+my_data[key])
+    
+    print(request.method)
+    
+    if request.method == 'GET':
+        print("post")
+        print(request.form)
+        CruiseDate = request.args.get('CruiseDate')
+        print(CruiseDate)
+        CruiseNo = request.form['CruiseNo']
+        print('CruiseNo')
+        
+    (dbStatus, rows) = sched.readSched(con, CruiseDate, CruiseNo)
+        
+    con.row_factory = sqlite3.Row
+                  
+    cur = con.cursor()
+    cur.execute("select * from PNA where id='5'")
+                       
+                  
+    rows = cur.fetchall();     
+    return render_template("singlebooking.html", rows = rows)
 
 @app.route("/schedules/")
 def schedules():
