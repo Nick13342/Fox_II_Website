@@ -64,7 +64,7 @@
 						</td>
 						<td>
 						</td>
-						<form action="http://localhost:5000/singlebooking" method='POST'>
+						<form action="/singlebooking/" method='POST'>
 							{% for row in rows %}
 								<tr>
 									<td name="CruiseDate">{{row["CruiseDate"]}}</td>
@@ -79,6 +79,15 @@
 								</tr>
 							{% endfor %}
 						</form>
+						<!--<form action="/singlebooking/" method="POST">-->
+						<!--<label for="quantity">Qty:</label>-->
+						<!--<input type="text" id="quantity" name="quantity" required>-->
+						<!--<p>-->
+							<!--<div id="lower">-->
+								<!--<input type="submit" value="Add to Cart">-->
+							<!--</div>-->
+						<!--</p>-->
+						<!--</form>-->
 					</tr>
 				</table>
 			</p>

@@ -88,21 +88,24 @@ def bookings():
     rows = cur.fetchall();     
     return render_template("bookings.html", rows = rows)
 
-@app.route("/singlebooking/", methods = ['POST', 'GET'])
+@app.route("/singlebooking/", methods = ['POST'])
 def singlebooking():
     global con
     sched = Schedule()
     
-    my_data = request.form
-    for key in my_data:
-        print('form key '+key+" "+my_data[key])
-    
+    #my_data = request.form
+    #for key in my_data:
+        #print('form key '+key+" "+my_data[key])
+        
     print(request.method)
     
-    if request.method == 'GET':
+    if request.method == 'POST':
+        #qty = request.form['quantity']
+        #print('qty')
+        #print(qty)
         print("post")
         print(request.form)
-        CruiseDate = request.args.get('CruiseDate')
+        CruiseDate = request.form['CruiseDate']
         print(CruiseDate)
         CruiseNo = request.form['CruiseNo']
         print('CruiseNo')
