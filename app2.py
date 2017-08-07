@@ -25,21 +25,6 @@ def index():
     endDate = '2017-10-17'
     (dbStatus, rows) = sched.readSchedulebyDate(con, startDate, endDate)
     
-    #----------------
-    #global cust
-    #cust = Customer()
-    #cust.readCust(con,2)
-    #print(cust.emailAddr)
-    #print(cust.dob)
-    #cust.emailAddr = 'test'
-    #if cust.updateCust(con, 2) == True:
-        #print("Updated")
-    #else:
-        #print("Failed")
-    #print(cust.surname)
-    #print(cust.emailAddr)
-    #----------------
-    
     return render_template("index.html", rows = rows)
 
 @app.route("/rates/")
@@ -54,11 +39,6 @@ def rates():
          
     
     rows = cur.fetchall();
-    
-    #cust.readCust(con,2)   
-    #print(cust.surname)
-    #print(cust.emailAddr)
-    #print(cust.dob)
     
     return render_template("rates.html", rows = rows)
 
@@ -82,9 +62,13 @@ def bookings():
     
     startDate = '2017-01-01'
     endDate = '2017-12-31'
+    Status = None
     (dbStatus, rows) = sched.readSchedulebyDate(con, startDate, endDate)
     
-    return render_template("bookings.html", rows = rows)
+    if (dbStatus == True):
+        return render_template("bookings.html", rows = rows)
+    else:
+        return render_template('not_available.html', error = sched.error)
 
 @app.route("/singlebooking/", methods = ['POST'])
 def singlebooking():
