@@ -66,7 +66,7 @@
 				<td>
 					<label for="children">Children:</label>
 				</td>
-				<form action="/custdetails/" method='POST'>
+				<form action="/custdetails/" method='GET'>
 					{% for row in rows %}
 						<tr>
 							<td>{{row["CruiseDate"]}}</td>
@@ -96,7 +96,7 @@
 						</tr>
 					{% endfor %}
 					<td>
-						<input type="submit" value="Confirm Booking">
+						<input type="submit" value="Continue Booking">
 					</td>
 				</form>
 			</tr>

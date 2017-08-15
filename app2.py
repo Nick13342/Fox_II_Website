@@ -87,9 +87,6 @@ def singlebooking():
 @app.route("/custdetails/")
 def custdetails():
     
-    print("custdetails")
-    print(request.method)
-    
     return render_template("custdetails.html")
 
 @app.route("/schedules/")
