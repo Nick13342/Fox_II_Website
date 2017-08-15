@@ -84,6 +84,14 @@ def singlebooking():
         
     return render_template("singlebooking.html", rows = rows)
 
+@app.route("/custdetails/")
+def custdetails():
+    
+    print("custdetails")
+    print(request.method)
+    
+    return render_template("custdetails.html")
+
 @app.route("/schedules/")
 def schedules():
     global con
