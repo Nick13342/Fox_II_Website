@@ -45,11 +45,11 @@
 				<form action="/confirmed/" method='POST'>
 					First Name
 					</br>
-					<input type="text" id="firstname">
+					<input type="text" id="firstname"></input>
 					</br>
 					Last Name
 					</br>
-					<input type="text" id="surname">
+					<input type="text" id="surname"></input>
 					</br>
 					Gender
 					</br>
@@ -62,33 +62,15 @@
 					</br>
 					Date of Birth
 					</br>
-					<label for="day"></label>
-						<select>
-							<option value="dd">DD</option>
-							<option value="01">01</option>
-							<option value="02">02</option>
-							<option value="03">03</option>
-						</select>
-					/
-					<label for="month"></label>
-						<select>
-							<option value="mm">MM</option>
-							<option value="01">01</option>
-							<option value="02">02</option>
-							<option value="03">03</option>
-						</select>
-					/
-					<label for="year"></label>
-						<select>
-							<option value="yyyy">YYYY</option>
-							<option value="2017">2017</option>
-							<option value="2016">2016</option>
-							<option value="2015">2015</option>
-						</select>
+					<input type="date" max="2017-08-17" min="1920-01-01"></input>
 					</br>
 					Email
 					</br>
+					<input type="email" id="email"></input>
+					</br>
 					Phone Number
+					</br>
+					<input type="number" id="phone"></input>					
 					</br>
 					Country
 					</p>
