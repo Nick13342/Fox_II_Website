@@ -84,7 +84,7 @@ def singlebooking():
         
     return render_template("singlebooking.html", rows = rows)
 
-@app.route("/custdetails/")
+@app.route("/custdetails/", methods = ['POST'])
 def custdetails():
     
     return render_template("custdetails.html")

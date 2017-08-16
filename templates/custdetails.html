@@ -42,10 +42,57 @@
 		<div id="content">
 			Legal Stuff
 			<p>
-				<form>
-					<table>
-					
-					</table>
+				<form action="/confirmed/" method='POST'>
+					First Name
+					</br>
+					<input type="text" id="firstname">
+					</br>
+					Last Name
+					</br>
+					<input type="text" id="surname">
+					</br>
+					Gender
+					</br>
+					<label for="gender"></label>
+						<select>
+							<option value="NULL"></option>
+							<option value="M">Male</option>
+							<option value="F">Female</option>
+						</select>
+					</br>
+					Date of Birth
+					</br>
+					<label for="day"></label>
+						<select>
+							<option value="dd">DD</option>
+							<option value="01">01</option>
+							<option value="02">02</option>
+							<option value="03">03</option>
+						</select>
+					/
+					<label for="month"></label>
+						<select>
+							<option value="mm">MM</option>
+							<option value="01">01</option>
+							<option value="02">02</option>
+							<option value="03">03</option>
+						</select>
+					/
+					<label for="year"></label>
+						<select>
+							<option value="yyyy">YYYY</option>
+							<option value="2017">2017</option>
+							<option value="2016">2016</option>
+							<option value="2015">2015</option>
+						</select>
+					</br>
+					Email
+					</br>
+					Phone Number
+					</br>
+					Country
+					</p>
+					<button type="Confirm Booking" name="confirm" value="CBooking">Confirm Booking</button>
 				</form>
 			</p>
 		</div>
