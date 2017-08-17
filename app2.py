@@ -4,6 +4,7 @@
 import sqlite3
 from customer import Customer
 from schedule import Schedule
+from emailAddress import email
 from flask import Flask, render_template, request
 app = Flask(__name__, template_folder="templates")
 global cust
@@ -89,6 +90,15 @@ def custdetails():
     
     return render_template("custdetails.html")
 
+@app.route("/confirmed/", methods = ['POST'])
+def confirmed():
+    #global con
+    #emailAd = email()
+    
+    #(dbStatus, rows) = emailAd.validEmailAddress(self)
+    
+    return render_template("confirmed.html")
+
 @app.route("/schedules/")
 def schedules():
     global con
@@ -113,7 +123,7 @@ def about_us():
     cur = con.cursor()
     cur.execute("select * from PNA where id='3'")
                 
-           
+
     rows = cur.fetchall();     
     return render_template("about_us.html", rows = rows)
 
