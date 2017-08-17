@@ -93,9 +93,11 @@ def custdetails():
 @app.route("/confirmed/", methods = ['POST'])
 def confirmed():
     #global con
-    #emailAd = email()
+    #cust = Customer()
     
-    #(dbStatus, rows) = emailAd.validEmailAddress(self)
+    #(dbStatus, rows) = cust.validateDT(self, dob)
+    #(dbStatus, rows) = cust.validatePhoneNumber(self, phone_number)
+    #(dbStatus, rows) = cust.insertCust(self, con)
     
     return render_template("confirmed.html")
 
