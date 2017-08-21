@@ -4,8 +4,13 @@
 import sqlite3
 from customer import Customer
 from schedule import Schedule
+<<<<<<< HEAD
 from emailAddress import Email
 from flask import Flask, render_template, request, session
+=======
+from emailAddress import email
+from flask import Flask, render_template, request
+>>>>>>> 1a69edcfb81fcc7fff14cadd538794b2539125be
 app = Flask(__name__, template_folder="templates")
 
 # require a secret key for session data to work OK.  Just needs
@@ -182,6 +187,17 @@ def custdetails():
 
 
 
+@app.route("/confirmed/", methods = ['POST'])
+def confirmed():
+    #global con
+    #cust = Customer()
+    
+    #(dbStatus, rows) = cust.validateDT(self, dob)
+    #(dbStatus, rows) = cust.validatePhoneNumber(self, phone_number)
+    #(dbStatus, rows) = cust.insertCust(self, con)
+    
+    return render_template("confirmed.html")
+
 @app.route("/schedules/")
 def schedules():
     global con
@@ -206,7 +222,7 @@ def about_us():
     cur = con.cursor()
     cur.execute("select * from PNA where id='3'")
                 
-           
+
     rows = cur.fetchall();     
     return render_template("about_us.html", rows = rows)
 
