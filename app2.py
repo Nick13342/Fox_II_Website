@@ -4,13 +4,9 @@
 import sqlite3
 from customer import Customer
 from schedule import Schedule
-<<<<<<< HEAD
 from emailAddress import Email
 from flask import Flask, render_template, request, session
-=======
-from emailAddress import email
-from flask import Flask, render_template, request
->>>>>>> 1a69edcfb81fcc7fff14cadd538794b2539125be
+
 app = Flask(__name__, template_folder="templates")
 
 # require a secret key for session data to work OK.  Just needs
@@ -181,7 +177,7 @@ def custdetails():
    
     
             
-    return render_template("custdetails.html", custname = custname)
+    return render_template("custdetails.html")#, custname = custname)
 
 
 
