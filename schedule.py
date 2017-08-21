@@ -13,11 +13,19 @@ from datetime import datetime
 
 class Schedule:
     
+   
     #---------------------------------------------------------------------------------
-    # Initialse a blank Schedule structure
+    # Initialise instance of schedule
     #---------------------------------------------------------------------------------
     def __init__(self):
         
+        self.__nullSchedule()
+        
+  
+    #---------------------------------------------------------------------------------
+    # Initialse a blank Schedule structure
+    #---------------------------------------------------------------------------------
+    def __nullSchedule(self):
         # Create blank instance variables for the new created object here.  We will
         # prefix these with a single '_' to make clear that they are internal to this class.
         self._CruiseDate = None
@@ -70,6 +78,8 @@ class Schedule:
         # retValue contains the success or failure of the read operation. Default to success
         self._retvalue = True
         self._error = None
+        row = []
+        self.__nullSchedule
         
         # Check the date is in the correct format.  The query would fail to return a record anyway
         # but it's nicer to return to the calling program a valid reason why it has failed.
@@ -85,7 +95,15 @@ class Schedule:
             return self._retvalue               
         
         # define SQL query
-        read_query = "select * from schedule where CruiseDate = ? and CruiseNo = ?"
+        read_query = "SELECT s.CruiseDate, s.CruiseNo, s.departure, s.BoatID, b.name, s.RouteID, \
+                     r.description, s.return, s.available, s.status \
+                    FROM schedule s \
+                    INNER JOIN boat b \
+                    ON b.BoatID = s.BoatID \
+                    INNER JOIN route r \
+                    ON s.RouteID = r.RouteID \
+                    WHERE s.CruiseDate = ? \
+                    AND s.CruiseNo = ?"
        
         try:
             # define cursone and execute the query, CustID is the primary key so we will only expect
@@ -96,11 +114,11 @@ class Schedule:
         
             row = cur.fetchall();
             
-            if row == None:
+            if not row:
                 self._error = "No schedule record found for date " + str(CruiseDate) + " and number  " + str(CruiseNo)
                 self._retvalue = False
             else:
-                self.__setSchedule(row)
+                self.__setSchedule(row[0])
     
             
         # Exception processing logic here.            
@@ -118,7 +136,8 @@ class Schedule:
         # retValue contains the success or failure of the read operation. Default to success
         self._retvalue = True
         self._error = None
-        rows = None
+        rows = []
+        self.__nullSchedule
         
         # Check that the dates are in a valid format and consistant with those that will be stored
         # within the Schedule table
@@ -152,7 +171,7 @@ class Schedule:
         
             rows = cur.fetchall();
             
-            if rows == None:
+            if not rows:
                 self._error = "No schedule records found between: " + str(startDate) + " " + str(endDate)
                 self._retvalue = False
             
@@ -224,49 +243,6 @@ class Schedule:
     
   
     
-    #-------------------------------------------------------------------------------------------------
-    # Update a customer record from the database.  Required is the database handle and the Customer ID
-    # All fields will be updated with the object variables.
-    #-------------------------------------------------------------------------------------------------
-    # def updateCust(self, con, CustID):
-    #     # retValue contains the success or failure of the update operation. Default to success
-    #     self._retvalue = True
-    #     self._error = None
-    #     
-    #     # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-    #     # constraints within the database itself.  
-    #     if not self.__validateDate(self._dob):
-    #         self._error = "Invalid date format"
-    #         self._retvalue = False
-    #         return self._retvalue
-    #         
-    #     
-    #     
-    #     # define SQL query
-    #     update_query = "update customer set Email = ?, surname = ?," \
-    #     "firstname = ?, DOB = ?, gender = ?, phone = ?, CountryCode = ?," \
-    #     "lastBooking = ?, totalBookings = ? where CustID = ?"
-    # 
-    #     # attempt to execute the query        
-    #     try:
-    #         cur = con.cursor()
-    #     
-    #         cur.execute(update_query, (self._email, self._surname, self._firstname, \
-    #                             self._dob, self._gender, self._phone, self._countryCode, \
-    #                             self._lastBooking, self._totalBookings, CustID))        
-    #     
-    #         # Commit the trasaction if successful.
-    #         con.commit()
-    #         
-    #     # Exception processing logic here.    
-    #     except Exception as err:
-    #         self._error = "Query Failed: " + str(err)
-    #         # Rollback transaction if failed.
-    #         con.rollback()
-    #         self._retvalue = False
-    #                 
-    #     return self._retvalue
-   
      
     #-------------------------------------------------------------------------------------------------
     # Expose the instance variables to calling programs using 'setter' and 'getter' routines instead
@@ -298,79 +274,7 @@ class Schedule:
     def BoatID(self):
         return self._BoatID
     
-    # # ----- Email addreess ----
-    # @property
-    # def emailAddr(self):
-    #     return self._email    
-    #     
-    # @emailAddr.setter
-    # def emailAddr(self, emailAddr):
-    #     self._email = emailAddr
-    # 
-    # # ----- Surname -----
-    # @property
-    # def surname(self):
-    #     return self._surname  
-    # 
-    # @surname.setter
-    # def surname(self, surname):
-    #     self._surname = surname
-    # 
-    # # ----- Firstname -----  
-    # @property
-    # def firstname(self):
-    #     return self._firstname
-    # 
-    # @firstname.setter
-    # def firstname(self, firstname):
-    #     self._firstname = firstname
-    # 
-    #  # ----- Date of birth -----        
-    # @property
-    # def dob(self):
-    #     return self._dob
-    # 
-    # @dob.setter    
-    # def dob(self, dob):
-    #     self._dob = dob
-    # 
-    # # ----- Gender -----    
-    # @property
-    # def gender(self):
-    #     return self._gender
-    # 
-    # @gender.setter    
-    # def gender(self, gender):
-    #     self._gender = gender
-    #     
-    # # ----- Phone number ------        
-    # @property
-    # def phone(self):
-    #     return self._phone
-    # 
-    # @phone.setter    
-    # def phone(self, phone):
-    #     self._phone = phone
-    # 
-    # # ----- Country Code -----    
-    # @property
-    # def countryCode(self):
-    #     return self._countryCode
-    # 
-    # @countryCode.setter    
-    # def countryCode(self, countryCode):
-    #     self._countryCode = countryCode
-    # 
-    # # ----- lastBooking -----        
-    # @property
-    # def lastBooking(self):
-    #     return self._lastBooking
-    # 
-    # # ----- total Bookings -----        
-    # @property
-    # def totalBookings(self):
-    #     return self._totalBookings
-  
+     
     # ----- any error codes -----  
     @property
     def error(self):

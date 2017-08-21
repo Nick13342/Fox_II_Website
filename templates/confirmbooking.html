@@ -40,17 +40,15 @@
 
 	<body>
 		<div id="content">
-			Legal Stuff
+			<h2> Confirm Booking</h2>
+			
 			<p>
-	<!--			<form action="/confirmed/" method='POST'> -->
-					<form action="/custdetails/" method='POST'>
-					Email
+					<form action="/confirmed/" method='POST'>
+					Email  {{cust["Email"]}}
+					<br></br>
 					</br>
-					<input type="email" name = "emailAddress"></input>  
-				    <input type="submit"></input> 
-					</br>
-					Name: {{ custname }}
-					
+					<p>Surname: {{cust["surname"]}}</p>
+					<p>Given Name:  {{cust["firstname"]}}</p>
 <!--					First Name
 					</br>
 					<input type="text" id="firstname"></input>

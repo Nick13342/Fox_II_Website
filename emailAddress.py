@@ -10,7 +10,7 @@
 # related to an email can be added.
 #------------------------------------------------------------------------------------
 
-class email:
+class Email:
     
     #----------------------------------------------------------------------------------
     # Maintain a list of common incorrect domain names here as class variables so they
@@ -73,7 +73,7 @@ class email:
             return(False)
 
         # Lets now check against some commom mistaken domain names
-        for self._domain in email.domains:
+        for self._domain in Email.domains:
             if self._emailParts[1].lower() == self._domain:
                self._error = "Invalid domain name: " + self._emailParts[1].lower()
                return(False)

@@ -66,7 +66,13 @@
 				<td>
 					<label for="children">Children:</label>
 				</td>
-				<form action="/custdetails/" method='POST'>
+				<form action="/validatecust/" method='POST'>
+					<br></br>
+					{{validationerror}}
+					<br></br>
+					Enter Email Address: <input type="email" name="emailAddress" value="{{emailaddr}}" required></input>
+					
+					<br></br>
 					{% for row in rows %}
 						<tr>
 							<td>{{row["CruiseDate"]}}</td>
@@ -77,7 +83,7 @@
 							<td>{{row["available"]}}</td>
 							<td>
 								<label for="adults"></label>
-								<select required>
+								<select name="adults" required>
 									<option value="0">0</option>
 									<option value="1">1</option>
 									<option value="2">2</option>
@@ -86,7 +92,7 @@
 							</td>
 							<td>
 								<label for="children"></label>
-								<select required>
+								<select name="children" required>
 									<option value="0">0</option>
 									<option value="1">1</option>
 									<option value="2">2</option>
@@ -96,6 +102,7 @@
 						</tr>
 					{% endfor %}
 					<td>
+						<br></br>
 						<input type="submit" value="Continue Booking">
 					</td>
 				</form>

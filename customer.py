@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime
-from emailAddress import email
+from emailAddress import Email
 import re
 
 #------------------------------------------------------------------------------------
@@ -16,10 +16,15 @@ import re
 class Customer:
     
     #---------------------------------------------------------------------------------
+    # Initialse a customer instance
+    #---------------------------------------------------------------------------------
+    def __init__(self):     
+        self.__nullCustomer()
+ 
+    #---------------------------------------------------------------------------------
     # Initialse a blank customer structure
     #---------------------------------------------------------------------------------
-    def __init__(self):
-        
+    def __nullCustomer(self):
         # Create blank instance vriables for the new created object here.  We will
         # prefix these with a single '_' to make clear that they are internal to this class.
         self._CustID = 0
@@ -31,7 +36,7 @@ class Customer:
         self._phone = ""
         self._countryCode = ""
         self._lastBooking = None
-        self._totalBookings = 0
+        self._totalBookings = 0     
  
     #---------------------------------------------------------------------------------
     #  Internal function to set the property values to the current row.  The __ at the
@@ -100,7 +105,9 @@ class Customer:
         # retValue contains the success or failure of the read operation. Default to success
         self._retvalue = True
         self._error = None
-        row = None
+        row = []
+        # Initialise the custome if this fails
+        self.__nullCustomer
         
         # define SQL query. Use a UNION statement on the country table to return the name of
         # the country as well as the codes.  Instead of typing in the full name of the tables
@@ -118,13 +125,14 @@ class Customer:
             cur = con.cursor()
             cur.execute(read_query, (CustID,))
         
-            row = cur.fetchone();
+            row = cur.fetchall();
             
             if row == None:
                 self._error = "No customer record found with CustID of: " + str(CustID)
                 self._retvalue = False
             else:
-                self.__setCustomer(row)
+                # Only excpect one customer to be returned
+                self.__setCustomer(row[0])
 
             
         # Exception processing logic here.            
@@ -142,7 +150,9 @@ class Customer:
         # retValue contains the success or failure of the read operation. Default to success
         self._retvalue = True
         self._error = None
-        row = None
+        row = []
+        # Initialise the custome if this fails
+        self.__nullCustomer
         
         # define SQL query. Use a UNION statement on the country table to return the name of
         # the country as well as the codes.  Instead of typing in the full name of the tables
@@ -160,13 +170,13 @@ class Customer:
             cur = con.cursor()
             cur.execute(read_query, (Email,))
         
-            row = cur.fetchone();
+            row = cur.fetchall();
             
-            if row == None:
+            if not row:
                 self._error = "No customer record found with Email of: " + str(Email)
                 self._retvalue = False
             else:
-                self.__setCustomer(row)
+                self.__setCustomer(row[0])
             
         # Exception processing logic here.            
         except Exception as err:
