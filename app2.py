@@ -109,7 +109,7 @@ def singlebooking():
         if (dbStatus == True):
             return render_template("singlebooking.html", rows = rows, validationerror = '', emailaddr = '')
         else:
-            return render_template('error.html', error = sched.error) 
+            return render_template('error.html', error = sched.error)
         
 # Validate the email address entered for a book and check to see whether its and
 # existing cstomer or not
