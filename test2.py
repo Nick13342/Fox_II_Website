@@ -5,6 +5,7 @@ import sqlite3
 from customer import Customer
 from emailAddress import Email
 from schedule import Schedule
+from booking import Booking
 from datetime import datetime
 
 global cust
@@ -34,26 +35,41 @@ global con
 # exit()
 
 #- email testing 
-emails = []
-
-emails.append(Email("brent@glanville@healthscope.co.nz"))
-emails.append(Email("b.g@gmail.co.nz"))
-if emails[0].validEmailAddress():
-    print("Valid email address")
-else:    
-    print(emails[0].error)
-
-if emails[1].validEmailAddress():
-    print("Valid email address")
-else:    
-    print(emails[1].error)
-
-exit()
+# emails = []
+# 
+# emails.append(Email("brent@glanville@healthscope.co.nz"))
+# emails.append(Email("b.g@gmail.co.nz"))
+# if emails[0].validEmailAddress():
+#     print("Valid email address")
+# else:    
+#     print(emails[0].error)
+# 
+# if emails[1].validEmailAddress():
+#     print("Valid email address")
+# else:    
+#     print(emails[1].error)
+# 
+# exit()
 # --------Customer part ------    
-con = sqlite3.connect('/Users/bglanv/Documents/Personal/bhs.db')
+con = sqlite3.connect('/Users/bglanv/Documents/Python/Projects/FoxII/database/Fox_II.db')
 con.execute('pragma foreign_keys=ON')
 #con = sqlite3.connect("database/Fo_II.db")
 print ("Opened database successfully") #Confirm database connection.
+
+book = Booking()
+
+book.CruiseDate = "2017-10-17"
+print('CruiseDate: ',book.CruiseDate)
+book.CruiseNo = 1
+book.CustID = 18
+book.adults = 1
+book.children = 2
+dbStatus = book.insertBooking(con)
+if (dbStatus == True):
+    print('Booking ID is: ',book.BookingID)
+else:
+    print(book.error)
+
 
 
 # schedRows = None
@@ -102,15 +118,15 @@ cust = Customer()
 #      print(cust.error)
      
 # Reading Customer now returns rows
-print("reading customer by email.....")
-(dbStatus, custRow) = cust.readCustbyEmail(con,"blah@xtra.co.nz")
-if (dbStatus == True):
-    print(cust.error)
-    print(cust.emailAddr)
-    print(cust.surname)
-#    print(custRow["surname"])
-else:
-     print(cust.error)     
+# print("reading customer by email.....")
+# (dbStatus, custRow) = cust.readCustbyEmail(con,"blah@xtra.co.nz")
+# if (dbStatus == True):
+#     print(cust.error)
+#     print(cust.emailAddr)
+#     print(cust.surname)
+# #    print(custRow["surname"])
+# else:
+#      print(cust.error)     
 # cust.emailAddr = 'test'
 # if cust.updateCust(con, 2) == True:
 #     print("Updated")

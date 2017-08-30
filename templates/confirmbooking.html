@@ -79,8 +79,45 @@
 					<select>
 						<option value=""></option>
 					</select>
-					</p>
-					<button type="Confirm Booking" name="confirm" value="CBooking">Confirm Booking</button>  -->
+					</p> -->
+					<br> </br>
+					<button type="Update Details" name="update" value="Update">Update Details</button>
+					<br></br>
+
+					{% for row in rows %}
+						<tr>
+							<td>{{row["CruiseDate"]}}</td>
+							<td>{{row["departure"]}}</td>
+							<td>{{row["return"]}}</td>
+							<td>{{row["name"]}}</td>
+							<td>{{row["RouteID"]}}</td>
+							<td>{{row["available"]}}</td>
+							<td>
+					{% endfor %}
+					<br></br>
+					<!-- Display the selected booking details. Put some logic in here to only print
+					the Children if some have booked and only plurals if more than 1 -->
+					Booking for {{adults}}
+					{% if adults == 1 %}
+						Adult
+					{% 	else %}
+						Adults
+					{% endif %}	
+					{% if children > 0 %}
+						and {{children}}
+						{% if children == 1 %}
+							Child
+						{% else %}
+							Children
+						{% endif %}	
+					{% endif %}	
+					<br></br>
+					<!-- Store the adults and children here, so they can be passed back to Python when the booking
+					is confirmed -->
+					<input type="hidden" name ="adults" value="{{adults}}">
+					<input type="hidden" name ="children" value="{{children}}">
+					<input type="hidden" name ="custID" value="{{custID}}">
+					<button type="Confirm Booking" name="confirm" value="CBooking">Confirm Booking</button>  
 				</form>
 			</p>
 		</div>

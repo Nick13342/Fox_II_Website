@@ -193,6 +193,7 @@ class Customer:
         # retValue contains the success or failure of the update operation. Default to success
         self._retvalue = True
         self._error = None
+
         
         # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
         # constraints within the database itself.

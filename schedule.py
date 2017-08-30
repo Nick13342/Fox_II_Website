@@ -212,7 +212,7 @@ class Schedule:
 
         # Even though the CruiseNo field is defined as Integer, SQLite will allow string values
         # to be inserted! So doesn't hurt to to a check here. 
-        if not str.isdigit(self._CruiseNo):
+        if not isinstance(self._CruiseNo, int):
             self._error = "CruiseNo is not numeric"
             self._retvalue = False
             return self._retvalue          
@@ -248,8 +248,6 @@ class Schedule:
     # Expose the instance variables to calling programs using 'setter' and 'getter' routines instead
     # of using individual methods.  This allows us to control how the properties are set and returned
     # to the calling program.
-    # Do not create setter methods for totalBookings and lastBooking as they are controlled by the
-    # newBooking method
     #------------------------------------------------------------------------------------------------- 
     
     # ----- Cruise Date ------
@@ -261,7 +259,7 @@ class Schedule:
     def CruiseDate(self, CruiseDate):
         self._CruiseDate = CruiseDate 
    
-    # ----- Cruise Date ------
+    # ----- Cruise Number ------
     @property
     def CruiseNo(self):
         return self._CruiseNo
@@ -274,7 +272,10 @@ class Schedule:
     def BoatID(self):
         return self._BoatID
     
-     
+    @property
+    def available(self):
+        return self._available
+    
     # ----- any error codes -----  
     @property
     def error(self):

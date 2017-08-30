@@ -74,7 +74,10 @@
 									<td>{{row["RouteID"]}}</td>
 									<td>{{row["available"]}}</td>
 									<td>
-										<button type="submit" name="label" value={{row["key"]}} >Book Now</button>
+										<!-- Only put Book now button there if there are seats available -->
+										{% if row["available"] > 0 %}
+											<button type="submit" name="label" value={{row["key"]}} >Book Now</button>
+										{% endif %}	
 									</td>
 								</tr>
 							{% endfor %}
