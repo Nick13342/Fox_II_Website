@@ -5,7 +5,7 @@
 		<meta charset="UTF-8">
 		<title>Fox II Bookings</title>
 		<meta name="keywords" content="">
-		<!--<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">-->
+		<!--<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/indexstyle.css') }}">-->
 	</head>
 	
 	<div id="header">
@@ -58,13 +58,7 @@
 				<td>
 					Available Seats
 				</td>
-				<td>
-					<label for="adults">Adults:</label>
-				</td>
-				<td>
-					<label for="children">Children:</label>
-				</td>
-				<form action="/custdetails/" method='POST'>
+				<form action="/singlebooking/" method='POST'>
 					{% for row in rows %}
 						<tr>
 							<td>{{row["CruiseDate"]}}</td>
@@ -74,25 +68,10 @@
 							<td>{{row["RouteID"]}}</td>
 							<td>{{row["available"]}}</td>
 							<td>
-								<label for="adults"></label>
-								<select required>
-									<option value="0">0</option>
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-								</select>
-							</td>
-							<td>
-								<label for="children"></label>
-								<select required>
-									<option value="0">0</option>
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-								</select>
-							</td>
-							<td>
-								<input type="submit" value="Book Now">
+								<!-- Only put Book now button there if there are seats available -->
+								{% if row["available"] > 0 %}
+									<button type="submit" name="label" value={{row["key"]}} >Book Now</button>
+								{% endif %}	
 							</td>
 						</tr>
 					{% endfor %}

@@ -11,6 +11,7 @@ from customer import Customer
 from schedule import Schedule
 from booking import Booking
 from emailAddress import Email
+from country import Country
 
 # require a secret key for session data to work OK.  Just needs
 # to be a random 20 characters
@@ -153,7 +154,7 @@ def validatecust():
             
         # If there's no email address just go to the new customer page
         if emailaddr == None:
-            return render_template("newcustomer.html", emailaddr = emailaddr)
+            return render_template("newcustomer.html", emailaddr = emailaddr, action = 'ADD')
         
         # Check to see whether this customer is there using the email address.
         (dbStatus, custmr) = cust.readCustbyEmail(con, emailaddr)
@@ -169,12 +170,14 @@ def validatecust():
                 if not email.validEmailAddress():
                     return render_template("singlebooking.html", rows = rows, validationerror = email.error, emailaddr = emailaddr)
                 else:
-                    return render_template("newcustomer.html", emailaddr = emailaddr, action = 'ADD')
+                    return render_template("newcustomer.html", emailaddr = emailaddr, cust = custmr[0], action = 'ADD')
             else:
                 return render_template('error.html', error = cust.error) 
         else:
-            # Only one customer will match so send the first row
-            return render_template("confirmbooking.html", cust = custmr[0], rows = rows, adults = adults, children = children, custID = cust.CustID)
+            # Only one customer will match so send the first row returned from the readbyCust routine
+            # Also pass the adults and children entered.  these get passed back when they Confirm the booking
+            print('Calling Customer ID: ', cust.CustID)
+            return render_template("confirmbooking.html", cust = custmr[0], rows = rows, adults = adults, children = children, CustID = cust.CustID)
 
 
 # Validate the email address entered for a book and check to see whether its and
@@ -182,19 +185,77 @@ def validatecust():
 @app.route("/confirmed/", methods = ['POST'])
 def confirmed():
     global con
-    # Create an customer object
-    cust = Customer()
-
-    if 'update' in request.form:
-        return render_template("newcustomer.html", emailaddr = emailaddr, cust = custmr[0], action = 'UPDATE')
-        print("Update Pressed")
-    
-    if 'confirm' in request.form:
-        print("Confirm pressed")
+   
+    if request.method == 'POST':
         
-    if 'adults' in request.form:
-        print('Adults present:', request.form['adults'])
-
+        # reread the values we sent to the webpage
+        adults = int(request.form['adults'])
+        children = int(request.form['children'])
+        CustID = int(request.form['CustID'])
+        
+        # Read the customer records
+        cust = Customer()
+        (dbStatus, custmr) = cust.readCust(con,CustID)
+        if (dbStatus == False):
+            return render_template('error.html', error = cust.error)
+        
+        
+        # if they are updating Customer details then we will take them to the newcustomer page, but prefilled
+        # with their exsiting details.
+        if 'update' in request.form:
+            ctry = Country()
+            (dbStatus, countries)  = ctry.readCountries(con)
+            if (dbStatus == False):
+                return render_template('error.html', error = ctry.error)
+            return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = custmr[0], countries = countries, action = 'UPDATE')
+            print("Update Pressed")
+        
+        # If they pressed confirm then we will confirm the booking
+        if 'confirm' in request.form:
+            print("About to insert booking")
+            # creat a booking object
+            book = Booking()
+       
+            print("After booking")
+            print("CruiseDate: ", session['CruiseDate'])
+            print("CruiseNo: ", session['CruiseNo'])
+            print("Adults: ", request.form['adults'])
+            print("Children: ", request.form['children'])
+            print("CustID: ",request.form['CustID'])
+    
+            # Read the Schedule records
+            sched = Schedule()
+            (dbStatus, rows) = sched.readSched(con, session['CruiseDate'], session['CruiseNo'])
+            if (dbStatus == False):
+                return render_template('error.html', error = sched.error)   
+           
+            # make sure there are enough seats for this booking, even though we checked when selecting the seats
+            # it could have changed.
+            if (adults + children) > sched.available:
+                return render_template("confirmbooking.html", cust = custmr[0], adults = adults, children = children, custID = cust.CustID, bookingmessage = 'Not enough seats available')
+                  
+            # set the properties for a new booking        
+            book.CruiseDate = session['CruiseDate']
+            book.CruiseNo = session['CruiseNo']
+            book.CustID = CustID
+            book.adults = adults
+            book.children = children
+            
+            print("Properties set")
+            # Insert the booking
+            dbStatus = book.insertBooking(con)
+            if (dbStatus == True):
+                cust.newBooking()
+                print("Total booking: ", cust.totalBookings)
+                print("Last Bookinng: ", cust.lastBooking)
+                dbStatus = cust.updateCust(con,CustID)
+                if (dbStatus == False):
+                    return render_template("confirmbooking.html", cust = custmr[0], rows = rows, adults = adults, children = children, custID = cust.CustID, bookingmessage = cust.error)
+                else:
+                    # Create a schedule object and read the schedule they have booked.
+                    return render_template("successbooking.html", rows = rows, adults = adults, children = children, bookingID = book.BookingID)
+            else:
+                 return render_template("confirmbooking.html", cust = custmr[0], adults = adults, children = children, custID = cust.CustID, bookingmessage = book.error)
 
 # Not sure need this??
 @app.route("/custdetails/", methods = ['POST'])

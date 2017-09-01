@@ -44,6 +44,7 @@ class Customer:
     #---------------------------------------------------------------------------------     
     def __setCustomer(self,row):
         # Allocate the retrieved columns into the object variables.
+        self._CustID = row['CustID']
         self._email = row['Email']
         self._surname = row['surname']
         self._firstname = row['firstname']
@@ -174,6 +175,14 @@ class Customer:
             
             if not row:
                 self._error = "No customer record found with Email of: " + str(Email)
+                row[0]['CustId'] = 0
+                row[0]['surname'] = ""
+                row[0]['firstname'] = ""
+                row[0]['email'] = None
+                row[0]['dob'] = None
+                row[0]['gender'] = ""
+                row[0]['phone'] = ""
+                row[0]['countryCode'] = ""
                 self._retvalue = False
             else:
                 self.__setCustomer(row[0])
@@ -278,7 +287,7 @@ class Customer:
         # It's preferable if the calling program does this check, but we will also capture any errors
         # here.
         if self._email:
-            thisEmail = email(self._email)
+            thisEmail = Email(self._email)
             # Use the method validEmailAddress to check the email and return any errors if found.
             if not thisEmail.validEmailAddress():
                 self._error = thisEmail.error
@@ -316,7 +325,7 @@ class Customer:
     #------------------------------------------------------------------------------------------------
     def newBooking(self):
         self._totalBookings += 1
-        self._lastBooking = datetime.date.now().strftime ("%Y-%m-%d")
+        self._lastBooking = datetime.now().strftime ("%Y-%m-%d")
    
    
     #-------------------------------------------------------------------------------------------------

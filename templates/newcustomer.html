@@ -40,50 +40,53 @@
 
 	<body>
 		<div id="content">
-			<h2>Create New Customer</h2>
+			{% if action == 'ADD' %}
+				<h2>Create New Customer</h2>
+			{% else %}
+				<h2>Maintain Customer Details</h2>
+			{% endif %}
 			<p>
-					<form action="/addcust/" method='POST'> 
+				<form action="/addcust/" method='POST'> 
 					Email
 					</br>
-					<input type="email" name = "emailAddress"></input>  
-				    <input type="submit"></input> 
+					<input type="email" name = "emailAddress" value = {{emailaddr}} > </input>
 					</br>
-					Name: {{ custname }}
-					
-<!--					First Name
+					First Name
 					</br>
-					<input type="text" id="firstname"></input>
+					<input type="text" id="firstname" value = {{cust["firstname"]}}></input>
 					</br>
 					Last Name
 					</br>
-					<input type="text" id="surname"></input>
+					<input type="text" id="surname" value = {{cust["surname"]}}></input>
 					</br>
 					Gender
 					</br>
 					<label for="gender"></label>
 						<select>
-							<option value="NULL"></option>
-							<option value="M">Male</option>
-							<option value="F">Female</option>
+							<option value="NULL" {% if (cust["gender"] == "NULL") %} selected="selected" {% endif %}></option>
+							<option value="M" {% if (cust["gender"] == "M") %} selected="selected" {% endif %}>Male</option>
+							<option value="F" {% if (cust["gender"] == "F") %} selected="selected" {% endif %}>Female</option>
 						</select>
 					</br>
 					Date of Birth
 					</br>
-					<input type="date" max="2017-08-17" min="1920-01-01"></input>
+					<input type="date" max="2017-08-17" min="1920-01-01" value = {{cust["DOB"]}}></input>
 					</br>
 					Phone Number
 					</br>
-					<input type="number" id="phone"></input>					
+					<input type="number" id="phone" value= {{cust["phone"]}}></input>					
 					</br>
 					Country
-					</br>
+					<br>
 					<select>
-						<option value=""></option>
+					{% for country in countries %}
+					<option value="{{country["countryCode"]}}" {% if (country["countryCode"] == cust["CountryCode"]) %} selected="selected" {% endif %}>{{country["country"]}}</option>
+					{% endfor %} 
 					</select>
-					</p>
-					<button type="Confirm Booking" name="confirm" value="CBooking">Confirm Booking</button>  -->
+					</br>
+					<button type="Confirm Details" name="confirm" value="CDetails">Confirm Details</button>  
 				</form>
-			</p>
+			</p>	
 		</div>
 	</body>
 	<br/>

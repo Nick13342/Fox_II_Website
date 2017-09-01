@@ -6,6 +6,7 @@ from customer import Customer
 from emailAddress import Email
 from schedule import Schedule
 from booking import Booking
+from country import Country
 from datetime import datetime
 
 global cust
@@ -56,19 +57,20 @@ con.execute('pragma foreign_keys=ON')
 #con = sqlite3.connect("database/Fo_II.db")
 print ("Opened database successfully") #Confirm database connection.
 
-book = Booking()
 
-book.CruiseDate = "2017-10-17"
-print('CruiseDate: ',book.CruiseDate)
-book.CruiseNo = 1
-book.CustID = 18
-book.adults = 1
-book.children = 2
-dbStatus = book.insertBooking(con)
-if (dbStatus == True):
-    print('Booking ID is: ',book.BookingID)
-else:
-    print(book.error)
+# book = Booking()
+# 
+# book.CruiseDate = "2017-10-17"
+# print('CruiseDate: ',book.CruiseDate)
+# book.CruiseNo = 1
+# book.CustID = 18
+# book.adults = 1
+# book.children = 2
+# dbStatus = book.insertBooking(con)
+# if (dbStatus == True):
+#     print('Booking ID is: ',book.BookingID)
+# else:
+#     print(book.error)
 
 
 
@@ -92,6 +94,15 @@ else:
 custRow = []
 cust = Customer()
 
+(dbStatus, custRow) = cust.readCustbyEmail(con,"blah@xtra.co.nz")
+if (dbStatus == True):
+    print(cust.error)
+    print(cust.emailAddr)
+    print(cust.surname)
+#    print(custRow["surname"])
+else:
+     print(cust.error)     
+
 # # Create new customer
 # print("Inserting Customer")
 # cust.surname = "Glanville"
@@ -109,14 +120,20 @@ cust = Customer()
 # 
 # # Reading Customer now returns rows
 # print("reading customer .....")
-# (dbStatus, custRow) = cust.readCust(con,2)
-# if (dbStatus == True):    
-#     print(cust.emailAddr)
-#     print(cust.dob)
-#     print(custRow["surname"])
-# else:
-#      print(cust.error)
-     
+(dbStatus, custRow) = cust.readCust(con,2)
+if (dbStatus == True):
+    print(cust.emailAddr)
+    print(cust.dob)
+#    print(custRow["surname"])
+else:
+      print(cust.error)
+
+cust.newBooking()
+cust.emailAddr = 'test'
+if cust.updateCust(con, 2) == True:
+    print("Updated")
+else:
+    print("cust.error")
 # Reading Customer now returns rows
 # print("reading customer by email.....")
 # (dbStatus, custRow) = cust.readCustbyEmail(con,"blah@xtra.co.nz")

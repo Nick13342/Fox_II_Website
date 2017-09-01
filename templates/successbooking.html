@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Fox II Not Available</title>
+		<meta name="keywords" content="">
+		<!--<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">-->
+	</head>
+	
+	<div id="header">
+		<div id="title">
+			<h1>Fox II Sailing Stuff</h1>
+		</div>
+		<nav>
+			<ul>
+				<li>
+					<a href="http://localhost:5000/">Home</a>
+				</li>
+				<li>
+					<a href="http://localhost:5000/rates/">Rates/Sailing</a>
+				</li>
+				<li>
+					<a href="http://localhost:5000/charter/">Private Charter</a>
+				</li>
+				<li>
+					<a href="http://localhost:5000/bookings/">Bookings</a>
+				</li>
+				<li>
+					<a href="http://localhost:5000/about_us">About Us</a>
+				</li>
+				<li>
+					<a href="http://localhost:5000/faqs">FAQs & Links</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+	
+	<body>
+	  <div id="content">
+		<p>
+			<h2>SUCCESSFUL BOOKING</h2>
+			<br>
+			You have been booked on the following cruise with a booking reference of: {{bookingID}}
+			<br></br>
+			{% for row in rows %}
+			<tr>
+				<td>{{row["CruiseDate"]}}</td>
+				<td>{{row["departure"]}}</td>
+				<td>{{row["return"]}}</td>
+				<td>{{row["name"]}}</td>
+				<td>{{row["RouteID"]}}</td>
+				<td>{{row["available"]}}</td>
+			<td>
+			{% endfor %}
+			<br></br>
+			<!-- Display the selected booking details. Put some logic in here to only print
+			the Children if some have booked and only plurals if more than 1 -->
+			Booking for {{adults}}
+			{% if adults == 1 %}
+				Adult
+			{% 	else %}
+				Adults
+			{% endif %}	
+			{% if children > 0 %}
+				and {{children}}
+				{% if children == 1 %}
+					Child
+				{% else %}
+					Children
+				{% endif %}	
+			{% endif %}	
+			
+		</p>
+	  </div>
+	</body>
+	<footer>
+		<div id="c1">
+			<a href="http://localhost:5000/not_available">Contact</a> | <a href="http://localhost:5000/not_available">About Us</a> | <a href="http://localhost:5000/not_available">FAQ</a>
+		</div>
+	</footer>
+</html>
