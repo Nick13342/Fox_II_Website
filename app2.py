@@ -1,5 +1,6 @@
 #cd 2017\DTP\Fox_II_Website
 #c:\Python34\python.exe app2.py
+#F:\Program Files (x86)\Python\Python36-32\python.exe app2.py
 
 # Import standard Python modules
 import sqlite3
