@@ -30,6 +30,22 @@ con.execute('pragma foreign_keys=ON')
 print ("Opened database successfully") #Confirm database connection.
 #con.close()
 
+#----------------------------------------------------------------------------
+# Procedure to read the Country table and populate the list before
+# rendering in the customer details page
+#----------------------------------------------------------------------------
+def readCountryTable():
+    #create country object and read the Countries
+    ctry = Country()
+    (dbStatus, countries)  = ctry.readCountries(con)
+    if (dbStatus == False):
+        return render_template('error.html', error = ctry.error)
+    else:
+        return(countries)
+    
+
+
+
 # For index.html default to show the cruises in the next two weeks
 @app.route("/")
 def index():
@@ -126,7 +142,7 @@ def singlebooking():
 def validatecust():
     global con
     # Create an customer object
-    cust = Customer()
+    cust = Customer(con,'NZL')
     emailaddr = None
     
     if request.method == 'POST':
@@ -154,7 +170,8 @@ def validatecust():
             
         # If there's no email address just go to the new customer page
         if emailaddr == None:
-            return render_template("newcustomer.html", emailaddr = emailaddr, action = 'ADD')
+            countries = readCountryTable()
+            return render_template("newcustomer.html", emailaddr = emailaddr, cust = custmr[0], countries = countries, action = 'ADD')
         
         # Check to see whether this customer is there using the email address.
         (dbStatus, custmr) = cust.readCustbyEmail(con, emailaddr)
@@ -170,7 +187,8 @@ def validatecust():
                 if not email.validEmailAddress():
                     return render_template("singlebooking.html", rows = rows, validationerror = email.error, emailaddr = emailaddr)
                 else:
-                    return render_template("newcustomer.html", emailaddr = emailaddr, cust = custmr[0], action = 'ADD')
+                    countries = readCountryTable()
+                    return render_template("newcustomer.html", emailaddr = emailaddr, cust = custmr[0], countries = countries, action = 'ADD')
             else:
                 return render_template('error.html', error = cust.error) 
         else:
@@ -194,7 +212,7 @@ def confirmed():
         CustID = int(request.form['CustID'])
         
         # Read the customer records
-        cust = Customer()
+        cust = Customer(con,'NZL')
         (dbStatus, custmr) = cust.readCust(con,CustID)
         if (dbStatus == False):
             return render_template('error.html', error = cust.error)
@@ -203,10 +221,7 @@ def confirmed():
         # if they are updating Customer details then we will take them to the newcustomer page, but prefilled
         # with their exsiting details.
         if 'update' in request.form:
-            ctry = Country()
-            (dbStatus, countries)  = ctry.readCountries(con)
-            if (dbStatus == False):
-                return render_template('error.html', error = ctry.error)
+            countries = readCountryTable()
             return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = custmr[0], countries = countries, action = 'UPDATE')
             print("Update Pressed")
         
@@ -245,26 +260,101 @@ def confirmed():
             # Insert the booking
             dbStatus = book.insertBooking(con)
             if (dbStatus == True):
+                # set properties on booking on schedule ready for updating
                 cust.newBooking()
+                sched.newBooking(adults + children)
                 print("Total booking: ", cust.totalBookings)
                 print("Last Bookinng: ", cust.lastBooking)
+                # update Customer with booking details
                 dbStatus = cust.updateCust(con,CustID)
                 if (dbStatus == False):
-                    return render_template("confirmbooking.html", cust = custmr[0], rows = rows, adults = adults, children = children, custID = cust.CustID, bookingmessage = cust.error)
+                    return render_template("confirmbooking.html", cust = custmr[0], rows = rows, adults = adults, children = children, custID = cust.CustID, bookingmessage = cust.error)                    
                 else:
-                    # Create a schedule object and read the schedule they have booked.
-                    return render_template("successbooking.html", rows = rows, adults = adults, children = children, bookingID = book.BookingID)
+                    # update schedule with the booking details
+                    dbStatus = sched.updateSchedule(con,session['CruiseDate'],session['CruiseNo'])
+                    if (dbStatus == False):
+                        return render_template("confirmbooking.html", cust = custmr[0], rows = rows, adults = adults, children = children, custID = cust.CustID, bookingmessage = sched.error)                         
+                    else:
+                        # Reread the schedule record with the updated available seats
+                        (dbStatus, rows) = sched.readSched(con, session['CruiseDate'], session['CruiseNo'])
+                        if (dbStatus == False):
+                            return render_template('error.html', error = sched.error)   
+                        return render_template("successbooking.html", rows = rows, adults = adults, children = children, bookingID = book.BookingID)
             else:
                  return render_template("confirmbooking.html", cust = custmr[0], adults = adults, children = children, custID = cust.CustID, bookingmessage = book.error)
 
-# Not sure need this??
+# Insert or update a cstomer depending on the action vale
 @app.route("/custdetails/", methods = ['POST'])
-def custdetails():
+def custdetails():       
+    usercust = {}
+  
+    # Assign a 'usercust' dictionary which we can
+    # render back to the form with the values entered by the user  
+    def setuserdata():
+  
+        usercust['emailaddr'] = request.form['emailaddr']
+        usercust['surname'] = request.form['surname']
+        usercust['firstname'] = request.form['firstname']
+        usercust['DOB'] = request.form['DOB']      
+        usercust['gender'] = request.form['gender']      
+        usercust['phone'] = request.form['phone']
+        usercust['countryCode'] = request.form['countryCode']
         
-    return render_template("custdetails.html", custname = custname)
+    # set the customer properties from the page. we don't need
+    # to do any validation here as the customer object will do
+    # all of that and return any any errors.      
+    def setcustvalues():
+        cust.emailAddr = usercust['emailaddr']
+        cust.surname = usercust['surname'] 
+        cust.firstname = usercust['firstname'] 
+        cust.dob = usercust['DOB']      
+        cust.gender = usercust['gender'] 
+        cust.phone = usercust['phone'] 
+        cust.countryCode = usercust['countryCode']         
+    
+    
+    if request.method == 'POST':
+        cust = Customer(con,'NZL')
+        
+        setuserdata()
+        
+        if request.form['action'] == 'UPDATE':
+            
+            (dbStatus, custmr) = cust.readCustbyEmail(con, request.form['emailaddr'])
+            if dbStatus == False:
+                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'UPDATE',returnmessage = cust.error)
+            
+            # set the values for the customer
+            setcustvalues()
 
+            # reread the countries table to be able to rerender the page 
+            countries = readCountryTable()
+            dbStatus = cust.updateCust(con,cust.CustID)
+            if dbStatus == False:
+                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'UPDATE',returnmessage = cust.error)
+            else:
+                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'UPDATE',returnmessage = 'Customer successfully updated')
+ 
+        if request.form['action'] == 'ADD':
+            # Make sure the record isn't there.
+            (dbStatus, custmr) = cust.readCustbyEmail(con, request.form['emailaddr'])
+            if dbStatus == True:
+                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'ADD',returnmessage = cust.error)
+            
+            # set the customer properties from the page. we don't need
+            # to do any validation here as the customer object will do
+            # all of that and return any any errors.
+            setcustvalues()
 
+            # reread the countries table to be able to rerender the page 
+            countries = readCountryTable()
 
+            dbStatus = cust.insertCust(con)
+            if dbStatus == False:
+                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'ADD',returnmessage = cust.error)
+            else:
+                # if the add was successful the re render the page in update mode in case they want to correct any details
+                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'UPDATE',returnmessage = 'Customer successfully added')       
 
 
 @app.route("/schedules/")
@@ -308,7 +398,7 @@ def faqs():
     rows = cur.fetchall();     
     return render_template("faqs.html", rows = rows)
 
-@app.route("/thisisaverysecretpage/admin/")
+@app.route("/admin/")
 def admin():
     global con
         
@@ -320,6 +410,11 @@ def admin():
                   
     rows = cur.fetchall();    
     return render_template("admin.html", rows = rows)
+
+@app.route("/adminlogin/")
+def admin_login():
+
+    return render_template("adminlogin.html")
 
 @app.route("/not_available")
 def na():

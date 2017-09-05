@@ -17,10 +17,49 @@ class Country:
     #---------------------------------------------------------------------------------
     def __init__(self):      
         pass  
+  
     #-----------------------------------------------------------------------------------------------
-    # Read all countried from the country table
-    #-----------------------------------------------------------------------------------------------
+    # Read a country by Code
+    #-----------------------------------------------------------------------------------------------  
+    def readCountryByCode(self, con, countryCode):
+        # retValue contains the success or failure of the read operation. Default to success
+        self._retvalue = True
+        self._error = None
+        country = ""
+        
+        # define SQL query
+        read_query = "SELECT c.country \
+                     FROM country c \
+                     WHERE c.countryCode = ?"
+        
+        try:
+            # define curson and execute the query, CustID is the primary key so we will only expect
+            # one record to be returned.
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute(read_query,(countryCode.upper(),))
+        
+            rows = cur.fetchall();
+            
+            if not rows:
+                self._error = "No Country records found for country code: "+ countryCode.upper()
+                self._retvalue = False
+            else:
+                country = rows[0]['country']
+       
+        # Exception processing logic here.            
+        except Exception as err:
+            self._error = "Query Failed: " + str(err)
+            self._retvalue = False
+        
+        # return the country name    
+        return (self._retvalue, country)
     
+  
+  
+    #-----------------------------------------------------------------------------------------------
+    # Read all countries from the country table
+    #-----------------------------------------------------------------------------------------------  
     def readCountries(self, con):
         # retValue contains the success or failure of the read operation. Default to success
         self._retvalue = True

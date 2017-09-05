@@ -10,7 +10,7 @@
 	
 	<div id="header">
 		<div id="title">
-			<h1>Fox II Sailing Akaroa</h1>
+			<h1>Fox II Sailing Stuff</h1>
 		</div>
 		<div id="menu">
 			<nav>
@@ -46,23 +46,31 @@
 				<h2>Maintain Customer Details</h2>
 			{% endif %}
 			<p>
-				<form action="/addcust/" method='POST'> 
+				<form action="/custdetails/" method='POST'> 
 					Email
 					</br>
-					<input type="email" name = "emailAddress" value = {{emailaddr}} > </input>
+					<!-- Alow an email address to be changed if this is an existing email, otherwise
+					just display the email.  Place it in a hidden field so it gets returned to the
+					python procedure -->
+					{% if action == 'ADD' %}
+						<input type="email" name = "emailaddr" value = {{emailaddr}} > </input>
+					{% else %}
+						<input type="hidden" name ="emailaddr" value="{{emailaddr}}">
+						{{emailaddr}}
+					{% endif %}	
 					</br>
 					First Name
 					</br>
-					<input type="text" id="firstname" value = {{cust["firstname"]}}></input>
+					<input type="text" name="firstname" value = {{cust["firstname"]}}></input>
 					</br>
 					Last Name
 					</br>
-					<input type="text" id="surname" value = {{cust["surname"]}}></input>
+					<input type="text" name="surname" value = {{cust["surname"]}}></input>
 					</br>
 					Gender
 					</br>
 					<label for="gender"></label>
-						<select>
+						<select name="gender" class="selectpicker form-control">
 							<option value="NULL" {% if (cust["gender"] == "NULL") %} selected="selected" {% endif %}></option>
 							<option value="M" {% if (cust["gender"] == "M") %} selected="selected" {% endif %}>Male</option>
 							<option value="F" {% if (cust["gender"] == "F") %} selected="selected" {% endif %}>Female</option>
@@ -70,21 +78,25 @@
 					</br>
 					Date of Birth
 					</br>
-					<input type="date" max="2017-08-17" min="1920-01-01" value = {{cust["DOB"]}}></input>
+					<input type="date" name = "DOB" max="1999-09-5" min="1920-01-01" value = {{cust["DOB"]}}></input>
 					</br>
 					Phone Number
 					</br>
-					<input type="number" id="phone" value= {{cust["phone"]}}></input>					
+					<input type="number" name="phone" value= {{cust["phone"]}}></input>					
 					</br>
 					Country
 					<br>
-					<select>
+					<select name="countryCode" class="selectpicker form-control">
 					{% for country in countries %}
-					<option value="{{country["countryCode"]}}" {% if (country["countryCode"] == cust["CountryCode"]) %} selected="selected" {% endif %}>{{country["country"]}}</option>
+						<option value="{{country["countryCode"]}}" {% if (country["countryCode"] == cust["countryCode"]) %} selected="selected" {% endif %}>{{country["country"]}}</option>
 					{% endfor %} 
 					</select>
+					<input type="hidden" name ="action" value="{{action}}">
 					</br>
-					<button type="Confirm Details" name="confirm" value="CDetails">Confirm Details</button>  
+					<button type="Confirm Details" name="confirm" value="CDetails">Confirm Details</button>
+					<br></br>
+					<br></br>
+					{{returnmessage}}
 				</form>
 			</p>	
 		</div>

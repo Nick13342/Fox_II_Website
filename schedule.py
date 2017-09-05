@@ -181,6 +181,44 @@ class Schedule:
             self._retvalue = False
             
         return (self._retvalue, rows)
+   
+    #-------------------------------------------------------------------------------------------------
+    # Update a schedule record from the database.  Required is the database handle and the Cruise Date
+    # and cruise No.
+    # All fields will be updated with the object variables.
+    #-------------------------------------------------------------------------------------------------
+    def updateSchedule(self, con, CruiseDate, CruiseNo):
+        # retValue contains the success or failure of the update operation. Default to success
+        self._retvalue = True
+        self._error = None
+        
+        
+        # define SQL query
+        update_query = "update schedule set departure = ?, BoatID = ?," \
+        "RouteID = ?, return = ?, available = ?, status = ?" \
+        "where CruiseDate = ? and CruiseNo = ?"
+
+        # attempt to execute the query        
+        try:
+            cur = con.cursor()
+        
+            cur.execute(update_query, (self._departure, self._BoatID, self._RouteID, \
+                                self._return, self._available, self._status, \
+                                CruiseDate, CruiseNo))        
+        
+            # Commit the trasaction if successful.
+            con.commit()
+            
+        # Exception processing logic here.    
+        except Exception as err:
+            self._error = "Query Failed: " + str(err)
+            # Rollback transaction if failed.
+            con.rollback()
+            self._retvalue = False
+                    
+        return self._retvalue
+   
+   
     
     #-------------------------------------------------------------------------------------------------
     # Insert a new schedule using the property values for schedule which need to have been
@@ -242,7 +280,13 @@ class Schedule:
         return self._retvalue
     
   
-    
+    #------------------------------------------------------------------------------------------------
+    # If a new booking is made then we subtract the number of people booked from the
+    # available seats
+    #------------------------------------------------------------------------------------------------
+    def newBooking(self, seats):
+        self._available -= seats
+
      
     #-------------------------------------------------------------------------------------------------
     # Expose the instance variables to calling programs using 'setter' and 'getter' routines instead

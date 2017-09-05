@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from emailAddress import Email
+from country import Country
 import re
 
 #------------------------------------------------------------------------------------
@@ -17,9 +18,21 @@ class Customer:
     
     #---------------------------------------------------------------------------------
     # Initialse a customer instance
+    # Accept a default country code.  This issed when creating new customers
+    # and seeting the default country.  Just do a check to make sure it exists
+    # before setting!
     #---------------------------------------------------------------------------------
-    def __init__(self):     
+    def __init__(self, con, DefaultCountry):
+        # create a country object and read the country code as passed.
+        cntry = Country()
+        (dbStatus, name) = cntry.readCountryByCode(con,DefaultCountry)
+        if dbStatus == True:          
+            self._defCountryCode = DefaultCountry.upper()
+        else:
+            self._defCountryCode = None
+        # Null the Customer on first initialising    
         self.__nullCustomer()
+  
  
     #---------------------------------------------------------------------------------
     # Initialse a blank customer structure
@@ -34,7 +47,7 @@ class Customer:
         self._dob = None
         self._gender = ""
         self._phone = ""
-        self._countryCode = ""
+        self._countryCode = self._defCountryCode
         self._lastBooking = None
         self._totalBookings = 0     
  
@@ -51,7 +64,7 @@ class Customer:
         self._dob = row['DOB']
         self._gender = row['gender']
         self._phone = row['phone']
-        self._countryCode = row['CountryCode']
+        self._countryCode = row['countryCode']
         self._lastBooking = row['lastBooking']
         self._totalBookings = row['totalBookings']
  
@@ -90,13 +103,55 @@ class Customer:
     # Examples of invalid numbers:  027-43543098 0800-TOPDOG
     #---------------------------------------------------------------------------------         
     def __validatePhoneNumber(self, phone_number):
-        # Use Pythons built in Regular Epression object to compare the phone number
+        # Use Pythons built in Regular Epression function to compare the phone number
         pattern = re.compile("^[+]?[\(\)0-9]+$")
         if pattern.match(phone_number):
             return True
         else:
             return False
-           
+     
+    #----------------------------------------------------------------------------------
+    # Fuction to validate the fields of any record being inserted or updated.  Any
+    # failure will be return to the user instead of updating the database
+    #----------------------------------------------------------------------------------    
+    def __validateFields(self):
+        
+        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
+        # constraints within the database itself.
+        # Check the date of Birth is valid.
+        if self._dob:
+            if not self.__validateDT(self._dob,"%Y-%m-%d"):
+                self._error = "Invalid date format"
+                return False
+ 
+        # Do some sanity checks on the phone number.
+        if self._phone:
+            if not self.__validatePhoneNumber(self._phone):
+                self._error = "Invalid phone number format. Must only contain +, (,) and digits"
+                return False
+        
+        # check that the surname and given names are provided  
+        if  not self._surname  or self._surname == "":
+            self._error = "Surname is required"
+            return False
+        
+        if  not self._firstname  or self._firstname == "":
+            self._error = "Firstname is required"
+            return False
+        
+        
+        # Now check the new email address. First initalise a new email object with the customers email address. 
+        # It's preferable if the calling program does this check, but we will also capture any errors
+        # here.
+        if self._email:
+            thisEmail = Email(self._email)
+            # Use the method validEmailAddress to check the email and return any errors if found.
+            if not thisEmail.validEmailAddress():
+                self._error = thisEmail.error
+                return False
+        
+        # will only get here if all of the validation checks have passed
+        return True     
         
     #-----------------------------------------------------------------------------------------------
     # Read a customer record from the database.  Required is the database handle and the Customer ID
@@ -130,6 +185,8 @@ class Customer:
             
             if row == None:
                 self._error = "No customer record found with CustID of: " + str(CustID)
+                # Create a blank customer row
+                row.append({'CustID':0,'surname':"",'firstname':"",'email':"",'dob':None,'gender':None,'phone':"",'countryCode':self._defCountryCode})
                 self._retvalue = False
             else:
                 # Only excpect one customer to be returned
@@ -175,14 +232,8 @@ class Customer:
             
             if not row:
                 self._error = "No customer record found with Email of: " + str(Email)
-                row[0]['CustId'] = 0
-                row[0]['surname'] = ""
-                row[0]['firstname'] = ""
-                row[0]['email'] = None
-                row[0]['dob'] = None
-                row[0]['gender'] = ""
-                row[0]['phone'] = ""
-                row[0]['countryCode'] = ""
+                # Create a blak return row to allow creation of new customer
+                row.append({'CustID':0,'surname':"",'firstname':"",'email':"",'dob':None,'gender':None,'phone':"",'countryCode':self._defCountryCode})
                 self._retvalue = False
             else:
                 self.__setCustomer(row[0])
@@ -203,37 +254,17 @@ class Customer:
         self._retvalue = True
         self._error = None
 
-        
-        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-        # constraints within the database itself.
-        if self._dob:
-            if not self.__validateDT(self._dob,"%Y-%m-%d"):
-                self._error = "Invalid date format"
-                self._retvalue = False
-                return self._retvalue
- 
-        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-        # constraints within the database itself.
-        if self._phone:
-            if not self.__validatePhoneNumber(self._phone):
-                self._error = "Invalid phone number format. Must only contain +, (,) and digits"
-                self._retvalue = False
-                return self._retvalue
-           
-        # Now check the new email address. First initalise a new email object with the customers email address. 
-        # It's preferable if the calling program does this check, but we will also capture any errors
-        # here.
-        if self._email:
-            thisEmail = email(self._email)
-            # Use the method validEmailAddress to check the email and return any errors if found.
-            if not thisEmail.validEmailAddress():
-                self._error = thisEmail.error
-                self._retvalue = False
-                return self._retvalue
+        print("here")
+
+        # Make sure all of the fields are good before we attempt to insert the new Customer
+        self._retvalue = self.__validateFields()
+        if self._retvalue == False:
+            return self._retvalue
+
         
         # define SQL query
         insert_query = "insert into customer (Email, surname, firstname, DOB, gender, \
-        phone, CountryCode, lastBooking, totalBookings) VALUES (?, ?, ?, \
+        phone, countryCode, lastBooking, totalBookings) VALUES (?, ?, ?, \
                                 ?, ?, ?, ?, ?, ?)" 
     
         # attempt to execute the query        
@@ -266,33 +297,11 @@ class Customer:
         # retValue contains the success or failure of the update operation. Default to success
         self._retvalue = True
         self._error = None
-        
-        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-        # constraints within the database itself.
-        if self._dob:
-            if not self.__validateDT(self._dob,"%Y-%m-%d"):
-                self._error = "Invalid date format"
-                self._retvalue = False
-                return self._retvalue
-        
-        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-        # constraints within the database itself.
-        if self._phone:
-            if not self.__validatePhoneNumber(self._phone):
-                self._error = "Invalid phone number format. Must only contain +, (,) and digits"
-                self._retvalue = False
-                return self._retvalue
-        
-        # Now check the new email address. First initalise a new email object with the customers email address. 
-        # It's preferable if the calling program does this check, but we will also capture any errors
-        # here.
-        if self._email:
-            thisEmail = Email(self._email)
-            # Use the method validEmailAddress to check the email and return any errors if found.
-            if not thisEmail.validEmailAddress():
-                self._error = thisEmail.error
-                self._retvalue = False
-                return self._retvalue     
+       
+        # Make sure all of the fields are good before we attempt to insert the new Customer
+        self._retvalue = self.__validateFields()
+        if self._retvalue == False:
+            return self._retvalue
         
         # define SQL query
         update_query = "update customer set Email = ?, surname = ?," \
