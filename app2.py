@@ -12,6 +12,7 @@ from schedule import Schedule
 from booking import Booking
 from emailAddress import Email
 from country import Country
+from admin import Login
 
 # require a secret key for session data to work OK.  Just needs
 # to be a random 20 characters
@@ -93,7 +94,6 @@ def charter():
     rows = cur.fetchall();     
     return render_template("charter.html", rows = rows)
 
-### Do we use this???
 @app.route("/bookings/")
 def bookings():
     global con
@@ -398,9 +398,23 @@ def faqs():
     rows = cur.fetchall();     
     return render_template("faqs.html", rows = rows)
 
-@app.route("/admin/")
+@app.route("/adminlogin/")
+def admin_login():
+    
+    return render_template("adminlogin.html")
+
+@app.route("/admin/", methods = ['POST'])
 def admin():
     global con
+    log = Login()
+    
+    username = request.form['Username']
+    #print(username)
+    password = request.form['Password']
+    #print(password)
+    
+    (usernameMatch) = log.confirmUsername(username)
+    (passwordMatch) = log.confirmPassword(password)
         
     con.row_factory = sqlite3.Row
                   
@@ -409,12 +423,10 @@ def admin():
                        
                   
     rows = cur.fetchall();    
-    return render_template("admin.html", rows = rows)
-
-@app.route("/adminlogin/")
-def admin_login():
-
-    return render_template("adminlogin.html")
+    if usernameMatch == True and passwordMatch == True:
+        return render_template("admin.html", rows = rows)
+    else:
+        return render_template("adminlogin.html", rows = rows)
 
 @app.route("/not_available")
 def na():
