@@ -495,13 +495,14 @@ def admin():
     password = request.form['Password']
     #print(password)
     
-    (usernameMatch) = log.confirmUsername(username)
-    (passwordMatch) = log.confirmPassword(password)
+    (usernameMatch) = log.confirmUsername(username, dbUsername)
+    (passwordMatch) = log.confirmPassword(password, dbPassword)
         
     con.row_factory = sqlite3.Row
                   
     cur = con.cursor()
-    cur.execute("select * from PNA where id='6'")
+    dbUsername = cur.execute("select username from Admin")
+    dbPassword = cur.execute("select password from Admin")
                        
                   
     rows = cur.fetchall();    

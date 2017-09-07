@@ -19,14 +19,14 @@ class Login:
     # Stuff
     #---------------------------------------------------------------------------------
     
-    def confirmUsername(self, username):
-        if self.username == setUsername:
+    def confirmUsername(self, username, dbUsername):
+        if self.username == dbUsername:
             return(True)
         else:
             return(False)
         
-    def confirmPassword(self, password):
-        if self.password == setPassword:
+    def confirmPassword(self, password, dbPassword):
+        if self.password == dbPassword:
             return(True)
         else:
             return(False)    
