@@ -494,16 +494,15 @@ def admin():
     #print(username)
     password = request.form['Password']
     #print(password)
-    
-    (usernameMatch) = log.confirmUsername(username, dbUsername)
-    (passwordMatch) = log.confirmPassword(password, dbPassword)
         
     con.row_factory = sqlite3.Row
                   
     cur = con.cursor()
     dbUsername = cur.execute("select username from Admin")
     dbPassword = cur.execute("select password from Admin")
-                       
+    
+    (usernameMatch) = log.confirmUsername(username, dbUsername)
+    (passwordMatch) = log.confirmPassword(password, dbPassword)                           
                   
     rows = cur.fetchall();    
     if usernameMatch == True and passwordMatch == True:
