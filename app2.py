@@ -14,7 +14,7 @@ from booking import Booking
 from emailAddress import Email
 from country import Country
 from admin import Login
-from dateutil.relativedelta import relativedelta
+#from dateutil.relativedelta import relativedelta
 
 # require a secret key for session data to work OK.  Just needs
 # to be a random 20 characters
