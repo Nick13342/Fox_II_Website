@@ -8,6 +8,7 @@ from schedule import Schedule
 from booking import Booking
 from country import Country
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 global cust
 global con
@@ -58,6 +59,12 @@ con.execute('pragma foreign_keys=ON')
 print ("Opened database successfully") #Confirm database connection.
 
 
+format = '%Y-%m-%d'
+years_ago = datetime.now() - relativedelta(years=5)
+
+print("Years Ago: ", years_ago.strftime(format))
+exit()
+
 # book = Booking()
 # 
 # book.CruiseDate = "2017-10-17"
@@ -89,35 +96,48 @@ print ("Opened database successfully") #Confirm database connection.
 #     print(sched.error)
 
 #exit()
+# cntry = Country()
+# (dbStatus, name) = cntry.readCountryByCode(con,'nzl')
+# print ('CountryName: ',name)
+
 
 # Create new customer
 custRow = []
-cust = Customer()
+cust = Customer(con,'NZL')
+print('Customer country code: ', cust.countryCode)
 
-(dbStatus, custRow) = cust.readCustbyEmail(con,"blah@xtra.co.nz")
-if (dbStatus == True):
-    print(cust.error)
-    print(cust.emailAddr)
-    print(cust.surname)
-#    print(custRow["surname"])
-else:
-     print(cust.error)     
 
-# # Create new customer
-# print("Inserting Customer")
-# cust.surname = "Glanville"
-# cust.firstname = "Nick"
-# #cust.emailAddr = "abc@google.co.nz"
-# cust.emailAddr = ""
-# cust.gender = "F"
-# cust.countryCode = "NZL"
-# cust.phone = "0274345288"
-# cust.dob = "1999-12-03"
-# if cust.insertCust(con):
-#     print("Customer inserted OK")
+#(dbStatus, custRow) = cust.readCustbyEmail(con,"blah@xtra.co.nz")
+# (dbStatus, custRow) = cust.readCustbyEmail(con,"abc@gmail.com")
+# if (dbStatus == True):
+#     print(cust.surname)
 # else:
-#     print(cust.error)
+#      print(cust.error)     
+# cust.surname = ""
+# dbStatus = cust.updateCust(con,cust.CustID)
+# if dbStatus == True:
+#     print('Updated Successfully')
+# else:
+#     print('Error:', cust.error)
 # 
+# exit()
+
+# Create new customer
+print("Inserting Customer")
+cust.surname = "Glanville"
+cust.firstname = "Nick"
+cust.emailAddr = "xyz@google.com"
+#cust.emailAddr = ""
+cust.gender = "F"
+cust.countryCode = "NZL"
+cust.phone = "0274345288"
+cust.dob = "1999-12-03"
+if cust.insertCust(con):
+    print("Customer inserted OK")
+else:
+    print(cust.error)
+exit()
+
 # # Reading Customer now returns rows
 # print("reading customer .....")
 (dbStatus, custRow) = cust.readCust(con,2)

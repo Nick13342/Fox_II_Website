@@ -14,6 +14,7 @@ from booking import Booking
 from emailAddress import Email
 from country import Country
 from admin import Login
+from dateutil.relativedelta import relativedelta
 
 # require a secret key for session data to work OK.  Just needs
 # to be a random 20 characters
@@ -340,7 +341,7 @@ def custdetails():
             # Make sure the record isn't there.
             (dbStatus, custmr) = cust.readCustbyEmail(con, request.form['emailaddr'])
             if dbStatus == True:
-                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'ADD',returnmessage = cust.error)
+                return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'ADD',returnmessage = 'Customer already exists')
             
             # set the customer properties from the page. we don't need
             # to do any validation here as the customer object will do
@@ -358,6 +359,80 @@ def custdetails():
                 return render_template("newcustomer.html", emailaddr = cust.emailAddr, cust = usercust, countries = countries, action = 'UPDATE',returnmessage = 'Customer successfully added')       
 
 
+# Insert or update a cstomer depending on the action vale
+@app.route("/scheddetails/", methods = ['POST'])
+def scheddetails():       
+    usersched = {}
+  
+    # Assign a 'usersched' dictionary which we can
+    # render back to the form with the values entered by the user  
+    def setuserdata():
+  
+        usersched['CruiseDate'] = request.form['CruiseDate']
+        usersched['CruiseNo'] = request.form['CruiseNo']
+        usersched['departure'] = request.form['departure']
+        usersched['BoatID'] = request.form['BoatID']      
+        usersched['RouteID'] = request.form['RouteID']      
+        usersched['return'] = request.form['return']
+        usersched['available'] = request.form['available']
+        
+    # set the schedule properties from the page. we don't need
+    # to do any validation here as the schedule object will do
+    # all of that and return any any errors.      
+    def setschedvalues():
+        sched.CruiseDate = usersched['CruiseDate']
+        sched.CruiseNo = usersched['CruiseNo']
+        sched.departuretime = usersched['departure']
+        sched.BoatID = usersched['BoatID']     
+        sched.RouteID = usersched['RouteID'] 
+        sched.returntime = usersched['return']
+        sched.available = usersched['available']      
+     
+    if request.method == 'POST':
+        sched = Schedule(con)       
+        setuserdata()
+        
+        if request.form['action'] == 'UPDATE':
+            
+            
+                # Make sure schedule still there
+                (dbStatus, schdle) = sched.readSched(con, request.form['CruiseDate'], request.form['CruiseNo'])
+                if dbStatus == False:
+                    return render_template("newschedule.html",  sched = usersched,  action = 'UPDATE',returnmessage = sched.error)
+                
+                setschedvalues()
+                
+                # Read this schedule record and pass onto the single booking page
+                if 'update' in request.form:     
+                    dbStatus = sched.updateSched(con, CruiseDate, CruiseNo)
+                if 'delete' in request.form:
+                    dbstatus = sched.deleteSched(con, CruiseDate, CruiseNo)
+     
+                if dbStatus == False:
+                    return render_template("newschedule.html", sched = usersched, action = 'UPDATE', returnmessage = sched.error)
+                else:
+                    return render_template("newschedule.html", sched = usersched, action = 'UPDATE',returnmessage = 'Schedule successfully updated')
+
+     
+        if request.form['action'] == 'ADD':
+            
+                # Make sure schedule still there
+                (dbStatus, schdle) = sched.readSched(con, request.form['CruiseDate'], request.form['CruiseNo'])
+                if dbStatus == True:
+                    return render_template("newschedule.html",  sched = usersched,  action = 'ADD',returnmessage = 'Schedule already exists!')
+                
+                # set the schedule properties from the page.           
+                setschedvalues()
+    
+                dbStatus = sched.insertSched(con)
+                if dbStatus == False:
+                    return render_template("newschedule.html", sched = usersched,  action = 'ADD',returnmessage = sched.error)
+                else:
+                    # if the add was successful the re render the page in update mode in case they want to correct any details
+                    return render_template("newschedule.html", sched = usersched, action = 'ADD',returnmessage = 'Schedule successfully added')
+  
+            
+
 @app.route("/schedules/")
 def schedules():
     global con
@@ -366,12 +441,18 @@ def schedules():
     Status = None
     #Create new schedule object.
     sched = Schedule()
-    #Return cruise schedules between dates.
-    (Status, schedRows) = sched.readSchedulebyDate(con,"2017-10-16", "2017-10-17")
+    #Return cruise schedules between dates. Make the lower one today and
+    # then put the last one two years out
+    
+    today = datetime.now().strftime("%Y-%m-%d")  
+    # Add two years to get the future schedules
+    future = datetime.now() - relativedelta(years=2)
+    
+    (Status, schedRows) = sched.readSchedulebyDate(con,today, future.strftime("%Y-%m-%d"))
     if (Status == True):
-        return render_template("schedule.html", rows = schedRows)
+        return render_template("schedules.html", rows = schedRows)
     else:
-        return render_template('not_available.html', error = sched.error)
+        return render_template('error.html', error = sched.error)
 
 @app.route("/about_us/")
 def about_us():

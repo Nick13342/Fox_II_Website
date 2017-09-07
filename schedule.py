@@ -311,14 +311,51 @@ class Schedule:
     @CruiseNo.setter
     def CruiseNo(self, CruiseNo):
         self._CruiseNo = CruiseNo 
-    
+   
+   # ---- Boat ID ----- 
     @property
     def BoatID(self):
         return self._BoatID
     
+    @BoatID.setter
+    def BoatID(self, BoatID):
+        self._BoatID = BoatID
+        
+        
+   # ---- Route ID ----- 
+    @property
+    def RouteID(self):
+        return self._RouteID
+    
+    @RouteID.setter
+    def BoatID(self, RouteID):
+        self._RouteID = RouteID 
+
+  # ---- departure ----- 
+    @property
+    def departure(self):
+        return self._departure
+    
+    @RouteID.setter
+    def departure(self, departure):
+        self._departure = departure 
+
+  # ---- return time ----- 
+    @property
+    def returntime(self):
+        return self._return
+    
+    @returntime.setter
+    def returntime(self, returntime):
+        self._return = returntime 
+ 
     @property
     def available(self):
         return self._available
+    
+    @available.setter
+    def available(self, available):
+        self._return = available  
     
     # ----- any error codes -----  
     @property

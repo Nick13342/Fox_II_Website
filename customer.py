@@ -254,8 +254,6 @@ class Customer:
         self._retvalue = True
         self._error = None
 
-        print("here")
-
         # Make sure all of the fields are good before we attempt to insert the new Customer
         self._retvalue = self.__validateFields()
         if self._retvalue == False:
