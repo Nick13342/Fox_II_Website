@@ -1,4 +1,27 @@
+.header.{
+	max-width: 60%;
+	position: relative;
+	margin: auto;
+	background-color: white;
+}
+
+.content{
+	max-width: 60%;
+	position: relative;
+	margin: auto;
+	background-color: white;
+}
+
+.footer{
+	max-width: 60%;
+	position: relative;
+	margin: auto;
+	background-color: white;
+}
+
+
 nav ul {
+	float: center;
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -21,7 +44,7 @@ nav li a {
 nav li a:hover {
     background-color: #111;
 }
-------------------------------------------------------------------
+
 * {box-sizing:border-box}
 
 /* Slideshow container */
@@ -114,3 +137,7 @@ nav li a:hover {
   from {opacity: .4} 
   to {opacity: 1}
 }
+
+
+	
+
