@@ -1,4 +1,11 @@
-.header.{
+.title{
+	max-width: 60%;
+	position: relative;
+	margin: auto;
+	background-color: white;
+}
+
+.menu{
 	max-width: 60%;
 	position: relative;
 	margin: auto;
@@ -12,7 +19,7 @@
 	background-color: white;
 }
 
-.footer{
+.c1{
 	max-width: 60%;
 	position: relative;
 	margin: auto;
