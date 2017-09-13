@@ -31,7 +31,13 @@
 
 .info{
 	text-align:center;
-	
+	width:49%;
+	float:left;
+}
+
+.booking{
+	width:49%;
+	float:right;
 }
 
 .award1{
