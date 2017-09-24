@@ -44,47 +44,45 @@
 			
 			<p>
 					<form action="/confirmed/" method='POST'>
-					Email  {{cust["Email"]}}
-					<br></br>
-					</br>
+					Email:  {{cust["Email"]}}
+					<br><br>
 					<p>Surname: {{cust["surname"]}}</p>
 					<p>Given Name:  {{cust["firstname"]}}</p>
-<!--					First Name
-					</br>
-					<input type="text" id="firstname"></input>
-					</br>
-					Last Name
-					</br>
-					<input type="text" id="surname"></input>
-					</br>
-					Gender
-					</br>
-					<label for="gender"></label>
-						<select>
-							<option value="NULL"></option>
-							<option value="M">Male</option>
-							<option value="F">Female</option>
-						</select>
-					</br>
-					Date of Birth
-					</br>
-					<input type="date" max="2017-08-17" min="1920-01-01"></input>
-					</br>
-					Phone Number
-					</br>
-					<input type="number" id="phone"></input>					
-					</br>
-					Country
-					</br>
-					<select>
-						<option value=""></option>
-					</select>
-					</p> -->
-					<br> </br>
-					<button type="Update Details" name="update" value="Update">Update Details</button>
-					<br></br>
-
-					{% for row in rows %}
+					<p>DOB: {{cust["DOB"]}}</p>
+					{% if cust["gender"] == 'M' %}
+						<p>Gender: Male</p>
+					{% endif %}
+					{% if cust["gender"] == 'F' %}
+						<p>Gender: Female</p>
+					{% endif %}					
+					<p>Phone Number:  {{cust["phone"]}}</p>		
+					<p>Country:  {{cust["country"]}}</p>		
+					<br> 
+					<button type="submit" name="update" value="Update">Update Customer Details</button>
+					<br>
+					<br>
+					<table>
+						<tr>
+							<td>
+							Cruise Date
+							</td>
+							<td>
+							Departure Time
+							</td>
+							<td>
+							Return Time
+							</td>
+							<td>
+							Vessel
+							</td>
+							<td>
+							Route
+							</td>
+							<td>
+							Available Seats
+							</td>
+						</tr>	
+						{% for row in rows %}
 						<tr>
 							<td>{{row["CruiseDate"]}}</td>
 							<td>{{row["departure"]}}</td>
@@ -93,8 +91,10 @@
 							<td>{{row["RouteID"]}}</td>
 							<td>{{row["available"]}}</td>
 							<td>
-					{% endfor %}
-					<br></br>
+						{% endfor %}
+					</table>	
+					<br>
+					<br>
 					<!-- Display the selected booking details. Put some logic in here to only print
 					the Children if some have booked and only plurals if more than 1 -->
 					Booking for {{adults}}
@@ -111,16 +111,16 @@
 							Children
 						{% endif %}	
 					{% endif %}	
-					<br></br>
-					{{bookingmessage}}
-					<br></br>
+					<br>
+					<p style="color:#FF0000";>{{bookingmessage}}</p>
+					<br>
 					
 					<!-- Store the adults and children here, so they can be passed back to Python when the booking
 					is confirmed -->
-					<input type="hidden" name ="adults" value="{{adults}}">
-					<input type="hidden" name ="children" value="{{children}}">
-					<input type="hidden" name ="CustID" value="{{CustID}}">
-					<button type="Confirm Booking" name="confirm" value="CBooking">Confirm Booking</button>  
+				<!--	<input type="hidden" name ="adults" value="{{adults}}">
+					<input type="hidden" name ="children" value="{{children}}">  -->
+					<input type="hidden" name ="CustID" value="{{CustID}}">  
+					<button type="submit" name="confirm" value="CBooking">Confirm Booking</button>  
 				</form>
 			</p>
 		</div>

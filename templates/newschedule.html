@@ -40,41 +40,26 @@
 
 	<body>
 		<div id="content">
-			{% if action == 'ADD' %}
-				<h2>Add New Schedule</h2>
-			{% else %}
-				<h2>Edit Schedule</h2>
-			{% endif %}
+			<h2>Schedule Maintenance</h2>
 			<p>
-				<form action="/scheddetails/" method='POST'> 
+				<form action="/confirmschedule/" method='POST'> 
+
 					Cruise date
-					
-					<!-- Alow the CruiseDate and CruiseNo to be added unless it is an existing
-					shcedule where we just place it in a hidden field so it gets returned to the
-					python procedure -->
-					{% if action == 'ADD' %}
-						Cruise date		
-						<input type="date" name = "CruiseDate" value = {{CruiseDate}} > </input>
-						<br></br>
-						Cruise Number
-						<input type="number" name = "CruiseNo" value = {{CruiseNo}} > </input>
-					{% else %}
-						<input type="hidden" name ="CruiseDate" value="{{CruiseDate}}">
-						<input type="hidden" name ="CruiseNo" value="{{CruiseNo}}">
-						Cruise Date
-						{{CruiseDate}}
-						Cruise Number
-						{{CruiseNo}}
-					{% endif %}	
-					</br>
+					<br>
+					<input type="date" name = "CruiseDate" value = {{CruiseDate}} > </input>
+					<br>
+					Cruise Number
+					<br>
+					<input type="number" name = "CruiseNo" value = {{CruiseNo}} > </input>
+					<br>
 					Departure
-					</br>
+					<br>
 					<input type="time" name="departure" value = {{sched["departure"]}}></input>
-					</br>
+					<br>
 					Return
-					</br>
+					<br>
 					<input type="time" name="return" value = {{sched["return"]}}></input>
-					</br>
+					<br>
 					Boat
 					<br>
 					<select name="BoatID" class="selectpicker form-control">
@@ -82,32 +67,36 @@
 						<option value="{{boat["BoatID"]}}" {% if (boat["BoatID"] == sched["BoatID"]) %} selected="selected" {% endif %}>{{boat["BoatID"]}}</option>
 					{% endfor %} 
 					</select>
-					</br>
+					<br>
 					Route
 					<br>
 					<select name="RouteID" class="selectpicker form-control">
-					{% for boat in boats %}
+					{% for route in routes %}
 						<option value="{{route["RouteID"]}}" {% if (route["RouteID"] == sched["RouteID"]) %} selected="selected" {% endif %}>{{route["RouteID"]}}</option>
 					{% endfor %} 
 					</select>
-					</br>					
+					<br>					
 					Available Seats
 					<br>
-					<input type="number" name = "available" value = {{available}} > </input>
-					</br>
-					
-					<input type="hidden" name ="action" value="{{action}}">
-					</br>
-					{% if action = "ADD" %}
-						<button type="Add Schedule" name="confirm" value="Add">Add</button>
-					{% elseif %}
-						<button type="Update" name="update" value="Update">Edit</button>
-						<button type="Delete" name="delete" value="Delete">Edit</button>
+					<input type="number" name = "available" value = {{sched["available"]}} > </input>
+					<br>
+					<br>
+					{% if action == 'CONFIRM' %}
+						<button type="submit" name="canceldelete" value="Cancel">Cancel</button>
+						<button type="submit" name="confirmdelete" value="Delete">Confirm Delete</button>
+					{% else %}
+						<button type="submit" name="read" value="Read">Read</button>
+						<button type="submit" name="add" value="Add">Add</button>
+						<button type="submit" name="update" value="Update">Update</button>
+						<button type="submit" name="delete" value="Delete">Delete</button>
 					{% endif %}	
-					<br></br>
-					<br></br>
-					{{returnmessage}}
+					<br><br>
+					<p style="color:#FF0000";>{{returnmessage}}</p>
+					<br><br>
 				</form>
+				<form action="/schedules/" method='POST'>
+					<button type="submit" name="schedules" value="Return to Schedules">Return to Schedules</button>
+				</form>	
 			</p>	
 		</div>
 	</body>

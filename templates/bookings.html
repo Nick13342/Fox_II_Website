@@ -72,7 +72,7 @@
 							<td>
 								<!-- Only put Book now button there if there are seats available -->
 								{% if row["available"] > 0 %}
-									<button type="submit" name="label" value={{row["key"]}} >Book Now</button>
+									<button type="submit" name="booking" value={{row["key"]}} >Book Now</button>
 								{% endif %}	
 							</td>
 						</tr>

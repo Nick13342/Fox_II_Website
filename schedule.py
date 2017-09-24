@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from debug import Debug
 
 #------------------------------------------------------------------------------------
 # Class Name: Schedule
@@ -20,6 +21,8 @@ class Schedule:
     def __init__(self):
         
         self.__nullSchedule()
+        # Set debugging for this module.  
+        self._db = Debug("schedule",False)
         
   
     #---------------------------------------------------------------------------------
@@ -35,7 +38,8 @@ class Schedule:
         self._RouteID = ""
         self._return = ""
         self._available = 0
-        self._status = ""
+        self._error = ""
+
     
     #---------------------------------------------------------------------------------
     #  Internal function to set the property values to the current row.  The __ at the
@@ -49,8 +53,17 @@ class Schedule:
         self._BoatID = row['BoatID']
         self._RouteID = row['RouteID']
         self._return = row['return']
-        self._available = row['available']
-        self._status = row['status']
+        self._available = int(row['available'])
+    
+    
+    #----------------------------------------------------------------------------------
+    # Return a blank schedule row
+    #----------------------------------------------------------------------------------
+    def blankScheduleRow(self):
+        row = []
+        self.__nullSchedule()
+        row.append({'CruiseDate':self._CruiseDate,'CruiseNo':self._CruiseNo,'departure':self._departure,'BoatID':self._BoatID,'Route_ID':self._RouteID,'return':self._return,'available':self._available})
+        return(row)
     
     #---------------------------------------------------------------------------------
     #  Internal function to check the date or time format.  Usually we expect that the 
@@ -70,14 +83,65 @@ class Schedule:
             return True
         except ValueError:
             return False   
+   
+    #----------------------------------------------------------------------------------
+    # Fuction to validate the fields of any record being inserted or updated.  Any
+    # failure will be return to the user instead of updating the database
+    #----------------------------------------------------------------------------------    
+    def __validateFields(self): 
+        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
+        # constraints within the database itself.  
+        if not self.__validateDT(self._CruiseDate, "%Y-%m-%d"):
+            self._error = "Invalid Cruise date format"
+            return False
+    
+        # Check the departure time is the time format we require
+        self._db.print("Departure = " + str(self._departure))
+        
+        if not self._departure:
+            self._error = "Departure Time is required"
+            return False
+            
+        if not self.__validateDT(self._departure, "%H:%M"):
+            self._error = "Invalid departure time format"
+            return False
+       
+        # Check the return time is the time we require
+        self._db.print("Return Time = " + str(self._return))
+        
+        if not self._return:
+            self._error = "Return Time is required"
+            return False
+        
+        if not self.__validateDT(self._return, "%H:%M"):
+            self._error = "Invalid return time format"
+            return False
+
+        # Even though the CruiseNo field is defined as Integer, SQLite will allow string values
+        # to be inserted! So doesn't hurt to to a check here. 
+        try:
+            self._CruiseNo = int(self._CruiseNo)
+        except:
+            self._error = "CruiseNo is not numeric"
+            return False
+        
+        
+        if self._CruiseNo < 1:
+            self._error = "Cruise Number must be greater than 0"
+            return self._retvalue          
+    
+        return True
+    
+    
            
     #-----------------------------------------------------------------------------------------------
-    # Read a customer record from the database.  Required is the database handle and the Customer ID
+    # Read a schedule record from the database.  Required is the database handle, the Cruise Date
+    # and Cruise No
     #-----------------------------------------------------------------------------------------------
     def readSched(self, con, CruiseDate, CruiseNo):
         # retValue contains the success or failure of the read operation. Default to success
         self._retvalue = True
-        self._error = None
+        self._error = ""
         row = []
         self.__nullSchedule
         
@@ -88,15 +152,25 @@ class Schedule:
             self._retvalue = False
             return self._retvalue
        
-        # Like the date, a cruise number has to be greater than 0 so we will check it here as well 
+        # Same for the Cruise No return a 'nice' error if CruiseNo < 1
+        try:  
+            CruiseNo = int(CruiseNo)
+        except:
+            self._error = "Cruise Number in not an integer"
+            self._retvalue = False
+        
         if CruiseNo < 1:
             self._error = "Cruise Number must be greater than 0"
             self._retvalue = False
             return self._retvalue               
+       
+        self._db.print("readSched") 
+        self._db.print("CruiseDate = " + CruiseDate)
+        self._db.print("CruiseNo = " + str(CruiseNo))
         
         # define SQL query
         read_query = "SELECT s.CruiseDate, s.CruiseNo, s.departure, s.BoatID, b.name, s.RouteID, \
-                     r.description, s.return, s.available, s.status \
+                     r.description, s.return, s.available \
                     FROM schedule s \
                     INNER JOIN boat b \
                     ON b.BoatID = s.BoatID \
@@ -135,8 +209,9 @@ class Schedule:
     def readSchedulebyDate(self, con, startDate, endDate):
         # retValue contains the success or failure of the read operation. Default to success
         self._retvalue = True
-        self._error = None
+        self._error = ""
         rows = []
+        # Null the schedule properties
         self.__nullSchedule
         
         # Check that the dates are in a valid format and consistant with those that will be stored
@@ -151,10 +226,15 @@ class Schedule:
             self._retvalue = False
             return (self._retvalue, rows)
  
+        # Print these values if we are debugging 
+        self._db.print("readSchedulebyDate")
+        self._db.print("startDate = " + startDate)
+        self._db.print("endDate = " + endDate)
+
         # define SQL query
         # taking CruiseDate and CruiseNo and join into one field so can be used for the book now button
         read_query = "SELECT s.CruiseDate, s.CruiseNo, s.departure, s.BoatID, b.name, s.RouteID, \
-                     r.description, s.return, s.available, s.status, (s.CruiseDate || '.' || s.CruiseNo) as 'key' \
+                     r.description, s.return, s.available, (s.CruiseDate || '.' || s.CruiseNo) as 'key' \
                     FROM schedule s \
                     INNER JOIN boat b \
                     ON b.BoatID = s.BoatID \
@@ -163,8 +243,7 @@ class Schedule:
                     WHERE s.CruiseDate between ? and ? \
                     ORDER BY s.CruiseDate ASC" 
         try:
-            # define cursone and execute the query, CustID is the primary key so we will only expect
-            # one record to be returned.
+            # define cursor and execute the query
             con.row_factory = sqlite3.Row
             cur = con.cursor()
             cur.execute(read_query, (startDate,endDate))
@@ -183,6 +262,61 @@ class Schedule:
         return (self._retvalue, rows)
    
     #-------------------------------------------------------------------------------------------------
+    # Delete a schedule record from the database.  Required is the database handle and the Cruise Date
+    # and cruise No.
+    #-------------------------------------------------------------------------------------------------
+    def deleteSchedule(self, con, CruiseDate, CruiseNo):
+        # retValue contains the success or failure of the update operation. Default to success
+        self._retvalue = True
+        self._error = ""       
+       
+        # Check the date is in the correct format.  The query would fail to return a record anyway
+        # but it's nicer to return to the calling program a valid reason why it has failed.
+        if not self.__validateDT(CruiseDate, "%Y-%m-%d"):
+            self._error = "Invalid date format"
+            self._retvalue = False
+            return self._retvalue
+       
+        # Same for the Cruise No return a 'nice' error if CruiseNo < 1
+        try:  
+            CruiseNo = int(CruiseNo)
+        except:
+            self._error = "Cruise Number in not an integer"
+            self._retvalue = False
+            return self._retvalue
+        
+        if CruiseNo < 1:
+            self._error = "Cruise Number must be greater than 0"
+            self._retvalue = False
+            return self._retvalue
+            
+        self._db.print("deleteSchedule")
+        self._db.print("CruiseDate = " + CruiseDate)
+        self._db.print("CruiseNo = " + str(CruiseNo))           
+    
+        # define SQL query
+        delete_query = "delete from schedule where CruiseDate = ? and CruiseNo = ?"
+
+        # attempt to execute the query        
+        try:
+            cur = con.cursor()
+        
+            cur.execute(delete_query, (CruiseDate, CruiseNo))        
+        
+            # Commit the trasaction if successful.
+            con.commit()
+            self._error = "Schedule successfully deleted"
+            
+        # Exception processing logic here.    
+        except Exception as err:
+            self._error = "Query Failed: " + str(err)
+            # Rollback transaction if failed.
+            con.rollback()
+            self._retvalue = False
+                    
+        return self._retvalue
+   
+    #-------------------------------------------------------------------------------------------------
     # Update a schedule record from the database.  Required is the database handle and the Cruise Date
     # and cruise No.
     # All fields will be updated with the object variables.
@@ -190,12 +324,19 @@ class Schedule:
     def updateSchedule(self, con, CruiseDate, CruiseNo):
         # retValue contains the success or failure of the update operation. Default to success
         self._retvalue = True
-        self._error = None
+        self._error = ""
+       
+        # Make sure all of the fields are good before we attempt to insert the new Schedule
+        self._CruiseDate = CruiseDate
+        self._CruiseNo = CruiseNo
         
+        self._retvalue = self.__validateFields()
+        if self._retvalue == False:
+            return self._retvalue 
         
         # define SQL query
         update_query = "update schedule set departure = ?, BoatID = ?," \
-        "RouteID = ?, return = ?, available = ?, status = ?" \
+        "RouteID = ?, return = ?, available = ?" \
         "where CruiseDate = ? and CruiseNo = ?"
 
         # attempt to execute the query        
@@ -203,11 +344,12 @@ class Schedule:
             cur = con.cursor()
         
             cur.execute(update_query, (self._departure, self._BoatID, self._RouteID, \
-                                self._return, self._available, self._status, \
-                                CruiseDate, CruiseNo))        
+                                self._return, self._available, \
+                                self._CruiseDate, self._CruiseNo))        
         
             # Commit the trasaction if successful.
             con.commit()
+            self._error = "Schedule successfully updated"
             
         # Exception processing logic here.    
         except Exception as err:
@@ -227,48 +369,28 @@ class Schedule:
     def insertSchedule(self, con):
         # retValue contains the success or failure of the update operation. Default to success
         self._retvalue = True
-        self._error = None
+        self._error = ""
         
-        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
-        # constraints within the database itself.  
-        if not self.__validateDT(self._CruiseDate, "%Y-%m-%d"):
-            self._error = "Invalid date format"
-            self._retvalue = False
-            return self._retvalue
-    
-        # Check the departure time is the time format we require
-        if not self.__validateDT(self._departure, "%H:%M"):
-            self._error = "Invalid departure time format"
-            self._retvalue = False
-            return self._retvalue
-       
-        # Check the return time is the time we require          
-        if not self.__validateDT(self._return, "%H:%M"):
-            self._error = "Invalid return time format"
-            self._retvalue = False
+        # Make sure all of the fields are good before we attempt to insert the new Customer
+        self._retvalue = self.__validateFields()
+        if self._retvalue == False:
             return self._retvalue
 
-        # Even though the CruiseNo field is defined as Integer, SQLite will allow string values
-        # to be inserted! So doesn't hurt to to a check here. 
-        if not isinstance(self._CruiseNo, int):
-            self._error = "CruiseNo is not numeric"
-            self._retvalue = False
-            return self._retvalue          
         
         # define SQL query
         insert_query = "insert into schedule (CruiseDate, CruiseNo, departure, BoatID, RouteID, \
-        return, available, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)" 
+        return, available) VALUES (?, ?, ?, ?, ?, ?, ?)" 
     
         # attempt to execute the query        
         try:
             cur = con.cursor()
         
-            cur.execute(insert_query, (self._Cruisedate, self._CruiseNo, self._departure, \
-                                self._BoatID, self._RouteID, self._return, self._available, \
-                                self._status))        
-        
+            cur.execute(insert_query, (self._CruiseDate, self._CruiseNo, self._departure, \
+                                self._BoatID, self._RouteID, self._return, self._available))
+ 
             # Commit the trasaction if successful.
             con.commit()
+            self._error = "Schedule successfully inserted"
             
         # Exception processing logic here.    
         except Exception as err:
@@ -328,7 +450,7 @@ class Schedule:
         return self._RouteID
     
     @RouteID.setter
-    def BoatID(self, RouteID):
+    def RouteID(self, RouteID):
         self._RouteID = RouteID 
 
   # ---- departure ----- 
@@ -355,7 +477,7 @@ class Schedule:
     
     @available.setter
     def available(self, available):
-        self._return = available  
+        self._available = available  
     
     # ----- any error codes -----  
     @property

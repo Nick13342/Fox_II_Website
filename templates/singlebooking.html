@@ -40,6 +40,12 @@
 	  <div id="content">
 		Insert info about cost of ticket.
 		<br>
+		<form action="/validatecust/" method='POST'>
+		<br>
+		Enter Email Address: <input type="email" name="emailAddress" size = 35 value="{{emailaddr}}" required></input>
+		<br>
+		If you are a new customer you will be taken to the Customer registration screen					
+		<br><br><br>
 		<table>
 			<tr>
 				<td>
@@ -66,49 +72,34 @@
 				<td>
 					<label for="children">Children:</label>
 				</td>
-				<form action="/validatecust/" method='POST'>
-					<br></br>
-					{{validationerror}}
-					<br></br>
-					Enter Email Address: <input type="email" name="emailAddress" value="{{emailaddr}}" required></input>
-					
-					<br></br>
-					{% for row in rows %}
-						<tr>
-							<td>{{row["CruiseDate"]}}</td>
-							<td>{{row["departure"]}}</td>
-							<td>{{row["return"]}}</td>
-							<td>{{row["name"]}}</td>
-							<td>{{row["RouteID"]}}</td>
-							<td>{{row["available"]}}</td>
-							<td>
-								<label for="adults"></label>
-								<select name="adults" required>
-									<option value="0">0</option>
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-								</select>
-							</td>
-							<td>
-								<label for="children"></label>
-								<select name="children" required>
-									<option value="0">0</option>
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-								</select>
-							</td>
-						</tr>
-					{% endfor %}
+			</tr>	
+	
+			{% for row in rows %}
+				<tr>
+					<td>{{row["CruiseDate"]}}</td>
+					<td>{{row["departure"]}}</td>
+					<td>{{row["return"]}}</td>
+					<td>{{row["name"]}}</td>
+					<td>{{row["RouteID"]}}</td>
+					<td>{{row["available"]}}</td>
 					<td>
-						<br></br>
-						<input type="submit" value="Continue Booking">
+						<label for="adults"></label>
+						<input type="number" name = "adults" value = {{adults}} min = "0"> </input>
 					</td>
-				</form>
-			</tr>
-		</table>
-		</br>
+					<td>
+						<label for="children"></label>
+						<input type="number" name = "children" value = {{children}} min = "0"> </input>
+					</td>
+				</tr>	
+			{% endfor %}
+		</table>	
+		<br>
+		<p style="color:#FF0000";>{{validationerror}}</p>
+		<br>
+		
+		<input type="submit" value="Continue Booking">			
+		</form>
+		<br>
 	  </div>
 	</body>
 	<p/>	<!--Temporary(Need CSS)-->

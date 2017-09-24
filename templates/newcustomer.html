@@ -48,42 +48,42 @@
 			<p>
 				<form action="/custdetails/" method='POST'> 
 					Email
-					</br>
+					<br>
 					<!-- Alow an email address to be changed if this is an existing email, otherwise
 					just display the email.  Place it in a hidden field so it gets returned to the
 					python procedure -->
 					{% if action == 'ADD' %}
-						<input type="email" name = "emailaddr" value = {{emailaddr}} > </input>
+						<input type="email" name = "emailaddr" size = 35 value = {{emailaddr}} > </input>
 					{% else %}
 						<input type="hidden" name ="emailaddr" value="{{emailaddr}}">
 						{{emailaddr}}
 					{% endif %}	
-					</br>
+					<br>
 					First Name
-					</br>
+					<br>
 					<input type="text" name="firstname" value = {{cust["firstname"]}}></input>
-					</br>
+					<br>
 					Last Name
-					</br>
+					<br>
 					<input type="text" name="surname" value = {{cust["surname"]}}></input>
-					</br>
+					<br>
 					Gender
-					</br>
+					<br>
 					<label for="gender"></label>
 						<select name="gender" class="selectpicker form-control">
 							<option value="NULL" {% if (cust["gender"] == "NULL") %} selected="selected" {% endif %}></option>
 							<option value="M" {% if (cust["gender"] == "M") %} selected="selected" {% endif %}>Male</option>
 							<option value="F" {% if (cust["gender"] == "F") %} selected="selected" {% endif %}>Female</option>
 						</select>
-					</br>
+					<br>
 					Date of Birth
-					</br>
+					<br>
 					<input type="date" name = "DOB" max="1999-09-5" min="1920-01-01" value = {{cust["DOB"]}}></input>
-					</br>
+					<br>
 					Phone Number
-					</br>
+					<br>
 					<input type="number" name="phone" value= {{cust["phone"]}}></input>					
-					</br>
+					<br>
 					Country
 					<br>
 					<select name="countryCode" class="selectpicker form-control">
@@ -93,11 +93,21 @@
 					</select>
 					<input type="hidden" name ="action" value="{{action}}">
 					</br>
-					<button type="Confirm Details" name="confirm" value="CDetails">Confirm Details</button>
-					<br></br>
-					<br></br>
-					{{returnmessage}}
+					<button type="submit" name="confirm" value="CDetails">Confirm Details</button>
+					<br>
+					<p style="color:#FF0000";>{{returnmessage}}</p>
+					<br>
 				</form>
+				<!-- Have a diffrent form here which enables the user to return to the booking confirmation screen. we store the
+				customers email address and CustID here as they are returned to the POST method of validatecust. Only display
+				this option when we know we have a valid customer -->
+				{% if action == 'UPDATE' %}
+					<form action="/validatecust/" method='POST'>
+						<input type="hidden" name ="CustID" value="{{CustID}}">
+						<input type="hidden" name ="emailAddress" value="{{emailaddr}}">
+						<button type="submit" name="bookingfromCust" value="Return to Booking">Return to Booking</button>
+					</form>
+				{% endif %}
 			</p>	
 		</div>
 	</body>

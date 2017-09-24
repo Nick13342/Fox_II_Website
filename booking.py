@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from debug import Debug
 
 #------------------------------------------------------------------------------------
 # Class Name: Booking
@@ -18,6 +19,7 @@ class Booking:
     #---------------------------------------------------------------------------------
     def __init__(self):      
         self.__nullBooking()
+        self._db = Debug("booking",True)
         
   
     #---------------------------------------------------------------------------------
@@ -66,9 +68,43 @@ class Booking:
             return True
         except ValueError:
             return False   
-           
+     
+    #----------------------------------------------------------------------------------
+    # Fuction to validate the fields of any record being inserted or updated.  Any
+    # failure will be return to the user instead of updating the database
+    #----------------------------------------------------------------------------------    
+    def __validateFields(self): 
+        # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
+        # constraints within the database itself.   
+    
+        # Even though the database fields are defined as Integers, SQLite will allow string values
+        # to be inserted!
+        
+        # Check CruiseNo
+        try:
+            self._CruiseNo = int(self._CruiseNo)
+        except:
+            self._error = "CruiseNo is not numeric"
+            return False
+        
+         # Check adults
+        try:
+            self._error = int(self._adults)
+        except:
+            self._error = "Adults value is not numeric"
+            return False
+        
+        # Check Children
+        try:
+            self._error = int(self._children)
+        except:
+            self._error = "Children value is not numeric"
+            return False
+        
+        return True
+              
     #-----------------------------------------------------------------------------------------------
-    # Read a customer record from the database.  Required is the database handle and the Customer ID
+    # Read a bookings for a customer.  Required is the database handle and the Customer ID
     #-----------------------------------------------------------------------------------------------
     def readBookingbyCustomer(self, con, CustID):
         # retValue contains the success or failure of the read operation. Default to success
@@ -102,7 +138,51 @@ class Booking:
             self._retvalue = False
             
         return (self._retvalue, rows)
+   
+    #-----------------------------------------------------------------------------------------------
+    # Read a bookings for schedule.  Required is the database handle, CruiseDate and CruiseNo
+    #-----------------------------------------------------------------------------------------------
+    def readBookingbySched(self, con, CruiseDate, CruiseNo):
+        # retValue contains the success or failure of the read operation. Default to success
+        self._retvalue = True
+        self._error = None
+        rows = []
+        # Make sure we nulled all of the entries for the booking before the read.
+        self.__nullBooking()       
+         
+        try:
+            self._CruiseNo = int(self._CruiseNo)
+        except:
+            self._error = "CruiseNo is not numeric"
+            sel._retvalue = False
+            return self._retvalue
+        
+        # define SQL query
+        read_query = "SELECT b.BookingID, b.CruiseDate, b.CruiseNo, b.BookingDate, b.CustID, b.adults, b.children \
+                     FROM bookings b \
+                     WHERE b.CruiseDate = ? AND b.CruiseNo = ?"
+       
+        try:
+            # define cursone and execute the query, CustID is the primary key so we will only expect
+            # one record to be returned.
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute(read_query, (CruiseDate,CruiseNo))
+        
+            rows = cur.fetchall();
+            
+            if not rows:
+                self._error = "No Bookings found for schedule: " + CruiseDate + "/" + str(CruiseNo)
+                self._retvalue = False
+       
+        # Exception processing logic here.            
+        except Exception as err:
+            self._error = "Query Failed: " + str(err)
+            self._retvalue = False
+            
+        return (self._retvalue, rows)
     
+       
     
     #-------------------------------------------------------------------------------------------------
     # Insert a new booking using the property values for the booking which need to have been
@@ -113,6 +193,7 @@ class Booking:
         self._retvalue = True
         self._error = None
         
+
         # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
         # constraints within the database itself.
         if self._CruiseDate:
@@ -121,33 +202,15 @@ class Booking:
                 self._retvalue = False
                 return self._retvalue
 
-        # Even though the database fields are defined as Integers, SQLite will allow string values
-        # to be inserted!  
-        if not isinstance(self._CruiseNo,int):
-            self._error = "CruiseNo is not numeric"
-            self._retvalue = False
-            return self._retvalue
-       
-             
-        if not isinstance(self._CustID, int):
-            self._error = "Customer ID is not numeric"
-            self._retvalue = False
-            return self._retvalue
-        
-        if not isinstance(self._adults, int):
-            self._error = "Adults value is not numeric"
-            self._retvalue = False
-            return self._retvalue
-        
-        if not isinstance(self._children, int):
-            self._error = "Children value is not numeric"
-            self._retvalue = False
-            return self._retvalue   
-        
+    
+        self._retvalue = self.__validateFields()
+        if self._retvalue == False:
+            return self._retvalue 
+         
         # set booking date to today.
-        self._BookingDate = datetime.now().strftime("%Y-%m-%d")             
+        self._BookingDate = datetime.now().strftime("%Y-%m-%d")
         
-        # define SQL query
+         # define SQL query
         insert_query = "insert into bookings (CruiseDate, CruiseNo, CustID, BookingDate, \
         adults, children) VALUES (?, ?, ?, ?, ?, ?)" 
     

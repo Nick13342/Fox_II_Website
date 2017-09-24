@@ -8,11 +8,11 @@
 		<link rel='stylesheet' type='text/css' href='..\static\indexstyle.css'>
 	</head>
 	
-	<div class="header">
-		<div class="title">
+	<div id="header">
+		<div id="title">
 			<h1>Fox II Sailing Akaroa</h1>
 		</div>
-		<div class="menu">
+		<div id="menu">
 			<nav>
 				<ul>
 					<li>
@@ -39,7 +39,7 @@
 	</div>
 
 	<body>
-		<div class="content">
+		<div id="content">
 			Content Stuff
 			<p>
 				
@@ -106,7 +106,7 @@
 									<td>
 										<!-- Only put Book now button there if there are seats available -->
 										{% if row["available"] > 0 %}
-											<button type="submit" name="label" value={{row["key"]}} >Book Now</button>
+											<button type="submit" name="booking" value={{row["key"]}} >Book Now</button>
 										{% endif %}	
 									</td>
 								</tr>
@@ -115,8 +115,6 @@
 					</tr>
 				</table>
 			</p>
-			<br>
-			Some Text or some shit
 		</div>
 		
 		<script>
@@ -151,7 +149,7 @@
 	
 	<br/>
 	<footer>
-		<div class="c1">
+		<div id="c1">
 			<a href="http://localhost:5000/not_available">Contact</a> | <a href="http://localhost:5000/not_available">About Us</a> | <a href="http://localhost:5000/not_available">FAQ</a>
 		</div>
 	</footer>

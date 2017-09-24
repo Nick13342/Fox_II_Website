@@ -60,6 +60,9 @@
 					Available Seats
 				</td>
 				<form action="/editschedule/" method='POST'>
+					<br></br>
+					<button type="submit" name="Add" value="Add">Add New Schedule</button>
+					<br></br>
 					{% for row in rows %}
 						<tr>
 							<td>{{row["CruiseDate"]}}</td>
@@ -73,8 +76,7 @@
 							</td>
 						</tr>
 					{% endfor %}
-					<br></br>
-					<button type="Add Schedule" name="Add" value="Add">Add New Schedule</button>  
+
 				</form>
 			</tr>
 		</table>

@@ -36,11 +36,11 @@
 	</div>
 	
 	<body>
-	  <div id="content">
+	<div id="content">
 		<p>
 			<form action="/admin/" method="POST">
-				Username:
-				<input type="text" name="Username"></input>
+				User Code:
+				<input type="text" name="Usercode"></input>
 				</p>
 				Password:
 				<input type="text" name="Password"></input>
@@ -48,7 +48,9 @@
 				<button type="Login" name="login">Login</button>
 			</form>
 		</p>
-	  </div>
+	</div>
+		<p style="color:#FF0000";>{{validationerror}}</p>
+	</br>
 	</body>
 	<footer>
 		<div id="c1">

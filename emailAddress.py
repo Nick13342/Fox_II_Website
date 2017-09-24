@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from debug import Debug
 
 #------------------------------------------------------------------------------------
 # Class Name: email
@@ -11,7 +12,7 @@
 #------------------------------------------------------------------------------------
 
 class Email:
-    
+   
     #----------------------------------------------------------------------------------
     # Maintain a list of common incorrect domain names here as class variables so they
     # are consistant across all instances of the object
@@ -29,6 +30,8 @@ class Email:
     # Initilise the object with email address and assume that it's a valid email
     #----------------------------------------------------------------------------------
     def __init__(self, NewEmail):
+        #set debugging
+        self._db = Debug("email",False)
         self._emailAddress = NewEmail
   
     #----------------------------------------------------------------------------------
@@ -69,8 +72,13 @@ class Email:
         
         # cannot have a . either side of a @ system
         if self._emailParts[0][-1:] == '.' or self._emailParts[1][0] == '.':
-            self._error = "Email address cannot have a . before or after the @"
+            self._error = "Email address cannot have a . immediately before or after the @"
             return(False)
+        
+        # Must have a '.' in the second part of the email
+        if '.' not in self._emailParts[1]:
+            self._error = "Email address must contain a . after the @ symbol"   
+            return(False)    
 
         # Lets now check against some commom mistaken domain names
         for self._domain in Email.domains:

@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 from emailAddress import Email
 from country import Country
+from debug import Debug
 import re
 
 #------------------------------------------------------------------------------------
@@ -23,6 +24,9 @@ class Customer:
     # before setting!
     #---------------------------------------------------------------------------------
     def __init__(self, con, DefaultCountry):
+
+        # Set debugging for this module.  
+        self._db = Debug("customer",False)
         # create a country object and read the country code as passed.
         cntry = Country()
         (dbStatus, name) = cntry.readCountryByCode(con,DefaultCountry)
@@ -32,6 +36,7 @@ class Customer:
             self._defCountryCode = None
         # Null the Customer on first initialising    
         self.__nullCustomer()
+        
   
  
     #---------------------------------------------------------------------------------
@@ -76,12 +81,11 @@ class Customer:
     #---------------------------------------------------------------------------------       
     def __validateDT(self,date_text, format):
         try:
-            # Take the date_text and return a datetime value formatted as supplied to the function.
-            # Reformatting the string back ensure we have the format we require, including leading
-            # 0's. eg 09:04, 2017-03-02
-            # If there is anerror converting the date with strptime, then a Value error execption
+            # Take the date_text and then check it by formatting it the way we want
+            # The strings should be identical if they are the same format.
+            # If there is an error converting the date with strptime, then a Value error execption
             # is raised.  If the dates don't match we raise the ValueError eception as well so
-            # it can be handled in the same way
+            # we can easily just return False.
             if date_text != datetime.strptime(date_text, format).strftime(format):
                 raise ValueError
             return True
@@ -90,8 +94,9 @@ class Customer:
  
   
     #---------------------------------------------------------------------------------
-    # Internal function to check the phone format. Just check that the phone number
-    # contains recognised numbers. Use the following regulare expression
+    # Internal function to check the phone format using a regular expression
+    # Just check that the phone number contains recognised numbers.
+    #  Use the following regular expression
     # ^[+]?[\(\)0-9]+)+$
     # where:
     # ^ - indicates the beginning of the string
@@ -275,6 +280,9 @@ class Customer:
         
             # Commit the trasaction if successful.
             con.commit()
+            
+            # Set the Customer ID to the lastrowid as it's an auto increment field in the database.
+            self._CustID = cur.lastrowid
             
         # Exception processing logic here.    
         except Exception as err:
