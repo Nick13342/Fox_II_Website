@@ -100,16 +100,14 @@ def index():
     # set the adminstrator session varaible to False.  This gets set when
     # the user logs in as an adminstrator which means they can maintain
     # schedules
-    #session['administrator'] = False
     
-    if not session['administrator']:
-        session['administrator'] = False
+    session['administrator'] = False
+    
+    #if not session['administrator']:
+    #    session['administrator'] = False
     
     # Create a schedule object.
     sched = Schedule()
-    
-#   startDate = '2017-10-16'
-#    endDate = '2017-10-17'
     
     # Default the view of schedules to the next two weeks on the home page
     # the 'Booking' page will display everything setup for the next two years
@@ -123,7 +121,7 @@ def index():
         startDate = '2017-10-16'
         endDate = '2017-10-17' 
     
-    # read the sechedule cruises with the dates specified
+    # read the schedule cruises with the dates specified
     (dbStatus, rows) = sched.readSchedulebyDate(con, startDate, endDate)
     
     # If we have any error returned the throw to the generic error page
@@ -296,7 +294,7 @@ def validatecust():
         if (adults + children) > sched.available:
             return render_template("singlebooking.html", rows = rows, validationerror = 'Not enough seats available', emailaddr = emailaddr, adults = adults, children = children)
             
-        # If there's no email address just go to the new customer pag, so they can register as a customer
+        # If there's no email address just go to the new customer page, so they can register as a customer
         if emailaddr == None:
             countries = readCountryTable()
             return render_template("newcustomer.html", emailaddr = emailaddr, cust = custmr[0], countries = countries, action = 'ADD')
@@ -573,7 +571,7 @@ def confirmschedule():
         # set the scheule properties            
         setschedvalues()
                 
-        # If they selected the 'read' buttonh then read this schedule record and pass back to user.
+        # If they selected the 'read' button then read this schedule record and pass back to user.
         # If not found then set the form to blank, except for the cruise date and number attempting to be found
         if 'read' in request.form:
             (dbStatus, rows) = sched.readSched(con, request.form['CruiseDate'], request.form['CruiseNo'])
@@ -602,7 +600,7 @@ def confirmschedule():
                         return render_template("newschedule.html", sched = usersched, CruiseDate = request.form['CruiseDate'], CruiseNo = request.form['CruiseNo'], boats = boats, routes = routes, returnmessage = sched.error)
                     else:
                         rows = sched.blankScheduleRow()
-                        return render_template("newschedule.html", sched = rows, CruiseDate = None, CruiseNo = None, boats = boats, routes = routes, returnmessage = sched.error)
+                        return render_template("newschedule.html", sched = rows[0], CruiseDate = None, CruiseNo = None, boats = boats, routes = routes, returnmessage = sched.error)
                 else:
                     return render_template("newschedule.html", sched = usersched, CruiseDate = request.form['CruiseDate'], CruiseNo = request.form['CruiseNo'], boats = boats, routes = routes, returnmessage = book.error)
             else:
@@ -617,7 +615,7 @@ def confirmschedule():
             else:
                 rows = sched.blankScheduleRow()
                 return render_template("newschedule.html", sched = rows, CruiseDate = None, CruiseNo = None, boats = boats, routes = routes, returnmessage = sched.error)
-        # If they have canceled a delet, just rerender the page
+        # If they have canceled a delete, just rerender the page
         
         if 'canceldelete' in request.form:
             db.print(" * Processing cancel delete *")
@@ -713,7 +711,7 @@ def editschedule():
     bt = Boat()
     rt = Route()
      
-    # process the data sendt back from the form 
+    # process the data sent back from the form 
     if request.method == 'POST':
   
         # Read the boats and schedule to display in option lists      

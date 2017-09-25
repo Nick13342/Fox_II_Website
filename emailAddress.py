@@ -70,7 +70,7 @@ class Email:
            self._error = "Email address cannot have multiple @ characters"   
            return(False)
         
-        # cannot have a . either side of a @ system
+        # cannot have a . either side of a @ symbol
         if self._emailParts[0][-1:] == '.' or self._emailParts[1][0] == '.':
             self._error = "Email address cannot have a . immediately before or after the @"
             return(False)

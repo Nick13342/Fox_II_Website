@@ -75,7 +75,7 @@ class Schedule:
             # Take the date_text and return a datetime value formatted as supplied to the function.
             # Reformatting the string back ensure we have the format we require, including leading
             # 0's. eg 09:04, 2017-03-02
-            # If there is anerror converting the date with strptime, then a Value error execption
+            # If there is an error converting the date with strptime, then a Value error execption
             # is raised.  If the dates don't match we raise the ValueError eception as well so
             # it can be handled in the same way
             if date_text != datetime.strptime(date_text, format).strftime(format):

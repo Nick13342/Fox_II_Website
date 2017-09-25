@@ -2,13 +2,14 @@ import sqlite3
 from datetime import datetime
 from emailAddress import Email
 from country import Country
+from dateutil.relativedelta import relativedelta
 from debug import Debug
 import re
 
 #------------------------------------------------------------------------------------
 # Class Name: Customer
 # Written By: Nick Glanville
-# Date:       02-07-2017
+# Date:       09-07-2017
 #
 # Class to create allow an instance of an Customer object.  This class is designed to
 # perform all of the basic database functions on the Customer table.  It allows the
@@ -124,11 +125,30 @@ class Customer:
         # Do any data validation checks here to ensure database integrity.  Some fields will be handled by
         # constraints within the database itself.
         # Check the date of Birth is valid.
+        if not self._dob:
+            self._error = "Date of Birth is required"
+            return False
+   
         if self._dob:
             if not self.__validateDT(self._dob,"%Y-%m-%d"):
                 self._error = "Invalid date format"
                 return False
- 
+       
+        # check the date of birth so its not in the future and they have to be 16 at least
+        today = datetime.now()
+        dob = datetime.strptime(self._dob, "%Y-%m-%d")
+        
+        if dob > today:
+            self._error = "Date of birth cannot be in the future"
+            return False
+        
+        #tells the difference between the two years
+        difference_in_years = relativedelta(today, dob).years
+        
+        if difference_in_years < 16:
+            self._error = "Must be older than 16 to register as a customer"
+            return False          
+
         # Do some sanity checks on the phone number.
         if self._phone:
             if not self.__validatePhoneNumber(self._phone):
