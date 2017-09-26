@@ -200,6 +200,7 @@ def singlebooking():
     global con
     db.enabled = True
     
+    # create a schedule object
     sched = Schedule()
      
     if request.method == 'POST':
@@ -772,22 +773,27 @@ def faqs():
 
 @app.route("/adminlogin/")
 def admin_login():
-    
+    #login template
     return render_template("adminlogin.html")
 
 @app.route("/admin/", methods = ['POST'])
 def admin():
     global con
+    # create a login object
     log = Login()
+    # create a schedule object
     sched = Schedule()
     schedRows = None
-    Status = None  
+    Status = None
     
+    # set debugging level
+    db.enabled = False    
+    
+    #variables pulled from the html form to pass to the login object
     UserCode = request.form['Usercode']
-    #print(username)
     password = request.form['Password']
-    #print(password)
     
+    #pass variables to login object allowing password to be authenticated
     (db.status) = log.AuthLoginByUserCode(con, UserCode, password)
     
     #Return cruise schedules between dates. Make the lower one today and
@@ -802,15 +808,17 @@ def admin():
     
     (Status, schedRows) = sched.readSchedulebyDate(con,today, future)
     
-    
+    #if password and schedule is valid render the schedules template
     if db.status == True and Status == True:
         session['administrator'] = True
         return render_template("schedules.html", rows = schedRows, validationerror = '')
     else:
+        #else rerender the login template and display the appropriate error
         return render_template("adminlogin.html", rows = rows, validationerror = log.error)
 
 @app.route("/not_available")
 def na():
+    #placeholder while pages are developed
     return render_template("not_available.html")
 
 if __name__ == "__main__":
