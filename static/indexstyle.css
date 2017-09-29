@@ -1,54 +1,54 @@
-.title{
+#title{
 	max-width: 60%;
 	position: relative;
 	margin: auto;
 	background-color: white;
 }
 
-.menu{
+#menu{
 	max-width: 60%;
 	position: relative;
 	margin: auto;
 	background-color: white;
 }
 
-.content{
+#content{
 	max-width: 60%;
 	position: relative;
 	margin: auto;
 	background-color: white;
 }
 
-.c1{
+#c1{
 	max-width: 60%;
 	position: relative;
 	margin: auto;
 	background-color: white;
 }
 
-.awards{	
+#awards{	
 }
 
-.info{
+#info{
 	text-align:center;
 	width:49%;
 	float:left;
 }
 
-.booking{
+#booking{
 	width:49%;
 	float:right;
 }
 
-.award1{
+#award1{
 	
 }
 
-.award2{
+#award2{
 	
 }
 
-.award3{
+#award3{
 	
 }
 
