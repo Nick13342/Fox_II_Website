@@ -1,5 +1,5 @@
 #cd 2017\DTP\Fox_II_Website
-#c:\Python34\python.exe app2.py
+#"c:\Python34\python.exe" app2.py
 #"F:\Program Files (x86)\Python\Python36-32\python.exe" app2.py
 
 # Import standard Python modules
@@ -658,7 +658,7 @@ def confirmschedule():
             
 
 #------------------------------------------------------------------------------------------
-# display the schedules
+# Display the schedules
 #------------------------------------------------------------------------------------------
 @app.route("/schedules/", methods = ['GET','POST'])
 def schedules():
@@ -769,13 +769,17 @@ def faqs():
     return render_template("faqs.html", rows = rows)
 # *****************************************
 
-
-
+#------------------------------------------------------------------------------------------
+# Display Login Page
+#------------------------------------------------------------------------------------------
 @app.route("/adminlogin/")
 def admin_login():
     #login template
     return render_template("adminlogin.html")
 
+#------------------------------------------------------------------------------------------
+# Once the user presses the login button 
+#------------------------------------------------------------------------------------------
 @app.route("/admin/", methods = ['POST'])
 def admin():
     global con
